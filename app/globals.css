@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* KaTeX comes through a JS import in the math primitive, but we add a
+   small set of overrides here so display math sits comfortably inside
+   long-form prose. */
+
+:root {
+  --paper: 252 250 245;
+  --paper-raised: 255 254 250;
+  --paper-sunken: 245 242 234;
+  --ink: 24 24 27;
+  --ink-muted: 82 82 91;
+  --ink-subtle: 161 161 170;
+  --line: 228 224 214;
+  --accent: 180 83 9;
+  --accent-soft: 254 243 199;
+  --viz-x: 220 38 38;
+  --viz-y: 22 163 74;
+  --viz-v: 37 99 235;
+  --viz-w: 168 85 247;
+  --viz-sum: 234 88 12;
+  --viz-eigen: 219 39 119;
+}
+
+.dark {
+  --paper: 18 18 21;
+  --paper-raised: 28 28 32;
+  --paper-sunken: 12 12 14;
+  --ink: 244 244 245;
+  --ink-muted: 161 161 170;
+  --ink-subtle: 113 113 122;
+  --line: 39 39 45;
+  --accent: 251 191 36;
+  --accent-soft: 69 26 3;
+  --viz-x: 248 113 113;
+  --viz-y: 74 222 128;
+  --viz-v: 96 165 250;
+  --viz-w: 192 132 252;
+  --viz-sum: 251 146 60;
+  --viz-eigen: 244 114 182;
+}
+
+html,
+body {
+  background: rgb(var(--paper));
+  color: rgb(var(--ink));
+}
+
+body {
+  font-feature-settings:
+    "ss01" on,
+    "ss02" on,
+    "cv11" on;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgb(var(--accent-soft));
+  color: rgb(var(--ink));
+}
+
+/* Long-form prose container */
+.prose-mi {
+  max-width: 68ch;
+  font-family: var(--font-newsreader), ui-serif, Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: rgb(var(--ink));
+}
+
+.prose-mi h1,
+.prose-mi h2,
+.prose-mi h3,
+.prose-mi h4 {
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  color: rgb(var(--ink));
+  letter-spacing: -0.01em;
+}
+
+.prose-mi h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.15;
+}
+
+.prose-mi h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 3rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+}
+
+.prose-mi h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose-mi p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.prose-mi a {
+  color: rgb(var(--accent));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.prose-mi a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.prose-mi code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background: rgb(var(--paper-sunken));
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+.prose-mi ul,
+.prose-mi ol {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose-mi ul {
+  list-style: disc;
+}
+
+.prose-mi ol {
+  list-style: decimal;
+}
+
+.prose-mi li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.prose-mi blockquote {
+  border-left: 3px solid rgb(var(--line));
+  padding-left: 1rem;
+  font-style: italic;
+  color: rgb(var(--ink-muted));
+  margin: 1.25rem 0;
+}
+
+/* Widgets and figures may break out of the prose column */
+.figure-bleed {
+  margin-left: max(-2rem, calc((68ch - 100%) / 2));
+  margin-right: max(-2rem, calc((68ch - 100%) / 2));
+}
+
+@media (min-width: 1024px) {
+  .figure-bleed {
+    margin-left: -4rem;
+    margin-right: -4rem;
+  }
+}
+
+/* KaTeX tweaks */
+.katex {
+  font-size: 1.05em;
+}
+
+.katex-display {
+  margin: 1.25rem 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+/* Subtle grid line color used by widgets */
+.grid-stroke {
+  stroke: rgb(var(--line));
+}
+
+/* Fade-in for chapter content */
+.chapter-enter {
+  animation: chapter-fade 0.45s ease-out both;
+}
+
+@keyframes chapter-fade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar in chapter sidebar */
+.thin-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: rgb(var(--line));
+  border-radius: 3px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
