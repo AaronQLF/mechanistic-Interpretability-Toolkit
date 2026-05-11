@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { SVD2DDecomposer } from "@/components/viz/SVD2DDecomposer";
 
 export const metadata = {
@@ -20,16 +21,16 @@ export default function SvdPage() {
     >
       <h2>The statement</h2>
       <p>
-        For any real <M>{`m \\times n`}</M> matrix <M>M</M>, there exist
-        orthogonal matrices <M>U</M> (size <M>{`m \\times m`}</M>) and{" "}
-        <M>V</M> (size <M>{`n \\times n`}</M>), and a diagonal matrix{" "}
+        For any real <M>{tex`m \times n`}</M> matrix <M>M</M>, there exist
+        orthogonal matrices <M>U</M> (size <M>{tex`m \times m`}</M>) and{" "}
+        <M>V</M> (size <M>{tex`n \times n`}</M>), and a diagonal matrix{" "}
         <M>Σ</M> with non-negative entries{" "}
-        <M>{`\\sigma_1 \\geq \\sigma_2 \\geq \\cdots \\geq 0`}</M>, such
+        <M>{tex`\sigma_1 \geq \sigma_2 \geq \cdots \geq 0`}</M>, such
         that:
       </p>
-      <Block>{`M = U \\Sigma V^{\\top}.`}</Block>
+      <Block>{tex`M = U \Sigma V^{\top}.`}</Block>
       <p>
-        The numbers <M>{`\\sigma_i`}</M> are the <strong>singular values</strong> of{" "}
+        The numbers <M>{tex`\sigma_i`}</M> are the <strong>singular values</strong> of{" "}
         <M>M</M>. The columns of <M>U</M> and <M>V</M> are the{" "}
         <strong>left</strong> and <strong>right singular vectors</strong>.
       </p>
@@ -40,12 +41,12 @@ export default function SvdPage() {
       </p>
       <ol>
         <li>
-          <M>{`V^{\\top}`}</M> rotates the input so the right singular
+          <M>{tex`V^{\top}`}</M> rotates the input so the right singular
           vectors line up with the standard axes.
         </li>
         <li>
           <M>Σ</M> stretches each standard axis by the corresponding{" "}
-          <M>{`\\sigma_i`}</M>.
+          <M>{tex`\sigma_i`}</M>.
         </li>
         <li>
           <M>U</M> rotates the result into the output frame.
@@ -67,7 +68,7 @@ export default function SvdPage() {
         matrix is the best possible rank-<M>k</M> approximation of <M>M</M>{" "}
         (in Frobenius and spectral norm). Formally:
       </p>
-      <Block>{`M_k = \\sum_{i=1}^{k} \\sigma_i\\, \\mathbf{u}_i \\mathbf{v}_i^{\\top}.`}</Block>
+      <Block>{tex`M_k = \sum_{i=1}^{k} \sigma_i\, \mathbf{u}_i \mathbf{v}_i^{\top}.`}</Block>
       <p>
         That&apos;s the Eckart–Young theorem. It&apos;s why SVD shows up
         anywhere people compress, denoise, or interpret a matrix.
@@ -89,9 +90,9 @@ export default function SvdPage() {
         <ul>
           <li>
             <strong>Low-rank factorization of attention.</strong>{" "}
-            <M>{`W_O W_V`}</M> (the OV circuit) and{" "}
-            <M>{`W_Q^{\\top} W_K`}</M> (the QK circuit) are often written
-            as SVDs to read off the rank-<M>{`d_{\\text{head}}`}</M>{" "}
+            <M>{tex`W_O W_V`}</M> (the OV circuit) and{" "}
+            <M>{tex`W_Q^{\top} W_K`}</M> (the QK circuit) are often written
+            as SVDs to read off the rank-<M>{tex`d_{\text{head}}`}</M>{" "}
             structure of what an attention head does.
           </li>
           <li>

@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { BasisSwitcher } from "@/components/viz/BasisSwitcher";
 
 export const metadata = {
@@ -23,14 +24,14 @@ export default function ChangeOfBasisPage() {
         Until now we&apos;ve been writing every vector as a pair of numbers
         without saying out loud what those numbers <em>are</em>. The numbers
         are coordinates with respect to the standard basis{" "}
-        <M>{`\\mathbf{e}_1, \\mathbf{e}_2`}</M>:
+        <M>{tex`\mathbf{e}_1, \mathbf{e}_2`}</M>:
       </p>
-      <Block>{`\\mathbf{v} = v_1 \\mathbf{e}_1 + v_2 \\mathbf{e}_2 \\quad \\Longleftrightarrow \\quad [\\mathbf{v}]_E = (v_1, v_2).`}</Block>
+      <Block>{tex`\mathbf{v} = v_1 \mathbf{e}_1 + v_2 \mathbf{e}_2 \quad \Longleftrightarrow \quad [\mathbf{v}]_E = (v_1, v_2).`}</Block>
       <p>
-        Pick any other basis <M>{`\\mathbf{b}_1, \\mathbf{b}_2`}</M> and the
+        Pick any other basis <M>{tex`\mathbf{b}_1, \mathbf{b}_2`}</M> and the
         same vector gets new coordinates:
       </p>
-      <Block>{`\\mathbf{v} = c_1 \\mathbf{b}_1 + c_2 \\mathbf{b}_2 \\quad \\Longleftrightarrow \\quad [\\mathbf{v}]_B = (c_1, c_2).`}</Block>
+      <Block>{tex`\mathbf{v} = c_1 \mathbf{b}_1 + c_2 \mathbf{b}_2 \quad \Longleftrightarrow \quad [\mathbf{v}]_B = (c_1, c_2).`}</Block>
       <p>
         The arrow itself never moved. Only the labels on the arrow changed.
       </p>
@@ -38,12 +39,12 @@ export default function ChangeOfBasisPage() {
       <h2>The change-of-basis matrix</h2>
       <p>
         Build the matrix <M>B</M> whose columns are{" "}
-        <M>{`\\mathbf{b}_1, \\mathbf{b}_2`}</M>. Then{" "}
-        <M>{`B [\\mathbf{v}]_B = [\\mathbf{v}]_E`}</M> — multiplying by{" "}
+        <M>{tex`\mathbf{b}_1, \mathbf{b}_2`}</M>. Then{" "}
+        <M>{tex`B [\mathbf{v}]_B = [\mathbf{v}]_E`}</M> — multiplying by{" "}
         <M>B</M> takes <M>B</M>-coordinates back to standard coordinates.
         Going the other way:
       </p>
-      <Block>{`[\\mathbf{v}]_B = B^{-1} [\\mathbf{v}]_E.`}</Block>
+      <Block>{tex`[\mathbf{v}]_B = B^{-1} [\mathbf{v}]_E.`}</Block>
 
       <Figure caption="Drag v, b₁, or b₂. The standard coordinates and the B-coordinates of the same arrow update side-by-side.">
         <BasisSwitcher />

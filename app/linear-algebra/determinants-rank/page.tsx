@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { DeterminantArea } from "@/components/viz/DeterminantArea";
 
 export const metadata = {
@@ -21,21 +22,21 @@ export default function DetRankPage() {
       <h2>Determinant: the area scale factor</h2>
       <p>
         Take the unit square — the one with corners at{" "}
-        <M>{`(0,0), (1,0), (1,1), (0,1)`}</M>. Apply a 2×2 matrix <M>M</M>.
+        <M>{tex`(0,0), (1,0), (1,1), (0,1)`}</M>. Apply a 2×2 matrix <M>M</M>.
         The image is a parallelogram. The <strong>determinant</strong> of{" "}
         <M>M</M> is its <em>signed</em> area:
       </p>
-      <Block>{`\\det \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix} = ad - bc.`}</Block>
+      <Block>{tex`\det \begin{bmatrix} a & b \\ c & d \end{bmatrix} = ad - bc.`}</Block>
       <ul>
         <li>
-          <M>{`|\\det M|`}</M> is how much <M>M</M> stretches area.
+          <M>{tex`|\det M|`}</M> is how much <M>M</M> stretches area.
         </li>
         <li>
-          The <em>sign</em> of <M>{`\\det M`}</M> tells you whether{" "}
+          The <em>sign</em> of <M>{tex`\det M`}</M> tells you whether{" "}
           <M>M</M> flipped orientation (a reflection makes it negative).
         </li>
         <li>
-          <M>{`\\det M = 0`}</M> means the parallelogram has collapsed to a
+          <M>{tex`\det M = 0`}</M> means the parallelogram has collapsed to a
           segment — <M>M</M> has crushed the plane onto a line, losing a
           dimension.
         </li>
@@ -53,11 +54,11 @@ export default function DetRankPage() {
       </p>
       <ul>
         <li>
-          <strong>Rank 2</strong> (<M>{`\\det M \\ne 0`}</M>): <M>M</M> maps
+          <strong>Rank 2</strong> (<M>{tex`\det M \ne 0`}</M>): <M>M</M> maps
           the plane onto the plane; nothing collapses.
         </li>
         <li>
-          <strong>Rank 1</strong> (<M>{`\\det M = 0`}</M>, but <M>M</M> isn&apos;t
+          <strong>Rank 1</strong> (<M>{tex`\det M = 0`}</M>, but <M>M</M> isn&apos;t
           all zeros): the image is a line.
         </li>
         <li>
@@ -79,8 +80,8 @@ export default function DetRankPage() {
       <Callout variant="mechinterp">
         <p>
           Many of the most-studied attention matrices are explicitly{" "}
-          <strong>low-rank</strong>: <M>{`W_O W_V`}</M> is at most rank{" "}
-          <M>{`d_{\\text{head}}`}</M>, which is much smaller than the
+          <strong>low-rank</strong>: <M>{tex`W_O W_V`}</M> is at most rank{" "}
+          <M>{tex`d_{\text{head}}`}</M>, which is much smaller than the
           residual dimension. That means each head reads a low-dimensional
           subspace of the residual stream and writes back to a low-dimensional
           subspace of it.
@@ -95,8 +96,8 @@ export default function DetRankPage() {
       <Quiz
         question={
           <>
-            For <M>{`M = \\begin{pmatrix} 2 & 4 \\\\ 1 & 2 \\end{pmatrix}`}</M>, what is{" "}
-            <M>{`\\det M`}</M> and what does that tell you?
+            For <M>{tex`M = \begin{pmatrix} 2 & 4 \\ 1 & 2 \end{pmatrix}`}</M>, what is{" "}
+            <M>{tex`\det M`}</M> and what does that tell you?
           </>
         }
         choices={[

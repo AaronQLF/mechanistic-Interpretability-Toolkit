@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { Compose2Matrices } from "@/components/viz/Compose2Matrices";
 
 export const metadata = {
@@ -23,7 +24,7 @@ export default function MatMulPage() {
         Suppose <M>B</M> is one transformation and <M>A</M> is another. Apply
         them one after the other:
       </p>
-      <Block>{`(A B) \\mathbf{v} = A(B\\mathbf{v}).`}</Block>
+      <Block>{tex`(A B) \mathbf{v} = A(B\mathbf{v}).`}</Block>
       <p>
         The product <M>AB</M> is defined to be the single matrix that does
         the same thing as &ldquo;<M>B</M> first, then <M>A</M>.&rdquo; The
@@ -33,11 +34,11 @@ export default function MatMulPage() {
 
       <h2>The formula, derived</h2>
       <p>
-        We know <M>{`(AB)\\mathbf{e}_1 = A(B\\mathbf{e}_1)`}</M>. But{" "}
-        <M>{`B\\mathbf{e}_1`}</M> is just the first column of <M>B</M>, and{" "}
+        We know <M>{tex`(AB)\mathbf{e}_1 = A(B\mathbf{e}_1)`}</M>. But{" "}
+        <M>{tex`B\mathbf{e}_1`}</M> is just the first column of <M>B</M>, and{" "}
         applying <M>A</M> to it gives:
       </p>
-      <Block>{`A \\begin{bmatrix} b_{11} \\\\ b_{21} \\end{bmatrix} = \\begin{bmatrix} a_{11} b_{11} + a_{12} b_{21} \\\\ a_{21} b_{11} + a_{22} b_{21} \\end{bmatrix}.`}</Block>
+      <Block>{tex`A \begin{bmatrix} b_{11} \\ b_{21} \end{bmatrix} = \begin{bmatrix} a_{11} b_{11} + a_{12} b_{21} \\ a_{21} b_{11} + a_{22} b_{21} \end{bmatrix}.`}</Block>
       <p>
         That&apos;s the first column of <M>AB</M>. Each column of <M>AB</M>{" "}
         is what <M>A</M> does to the corresponding column of <M>B</M>. The
@@ -64,8 +65,8 @@ export default function MatMulPage() {
       <Callout variant="mechinterp">
         <p>
           A transformer&apos;s attention layer effectively factors as{" "}
-          <M>{`W_O W_V`}</M> (the &ldquo;OV circuit&rdquo;) and{" "}
-          <M>{`W_Q^\\top W_K`}</M> (the &ldquo;QK circuit&rdquo;). Treating
+          <M>{tex`W_O W_V`}</M> (the &ldquo;OV circuit&rdquo;) and{" "}
+          <M>{tex`W_Q^\top W_K`}</M> (the &ldquo;QK circuit&rdquo;). Treating
           these products as <em>single low-rank matrices</em>, then
           interpreting them, is the standard interpretability move.
         </p>

@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { DotProductExplorer } from "@/components/viz/DotProductExplorer";
 import { ProjectionWidget } from "@/components/viz/ProjectionWidget";
 
@@ -24,8 +25,8 @@ export default function DotProductPage() {
         The <strong>dot product</strong> of two vectors has two equivalent
         formulas. One is computational, one is geometric:
       </p>
-      <Block>{`\\mathbf{v} \\cdot \\mathbf{w} = v_1 w_1 + v_2 w_2 + \\cdots + v_n w_n.`}</Block>
-      <Block>{`\\mathbf{v} \\cdot \\mathbf{w} = \\lVert \\mathbf{v} \\rVert \\, \\lVert \\mathbf{w} \\rVert \\cos\\theta,`}</Block>
+      <Block>{tex`\mathbf{v} \cdot \mathbf{w} = v_1 w_1 + v_2 w_2 + \cdots + v_n w_n.`}</Block>
+      <Block>{tex`\mathbf{v} \cdot \mathbf{w} = \lVert \mathbf{v} \rVert \, \lVert \mathbf{w} \rVert \cos\theta,`}</Block>
       <p>
         where <M>θ</M> is the angle between them. The fact that these two
         formulas describe the same number is the secret sauce — it lets you
@@ -35,15 +36,15 @@ export default function DotProductPage() {
       <h2>Sign tells you alignment</h2>
       <ul>
         <li>
-          <M>{`\\mathbf{v} \\cdot \\mathbf{w} > 0`}</M> — they point in
+          <M>{tex`\mathbf{v} \cdot \mathbf{w} > 0`}</M> — they point in
           roughly the same direction (acute angle).
         </li>
         <li>
-          <M>{`\\mathbf{v} \\cdot \\mathbf{w} = 0`}</M> — they&apos;re{" "}
+          <M>{tex`\mathbf{v} \cdot \mathbf{w} = 0`}</M> — they&apos;re{" "}
           <em>orthogonal</em> (perpendicular).
         </li>
         <li>
-          <M>{`\\mathbf{v} \\cdot \\mathbf{w} < 0`}</M> — they roughly
+          <M>{tex`\mathbf{v} \cdot \mathbf{w} < 0`}</M> — they roughly
           oppose each other (obtuse angle).
         </li>
       </ul>
@@ -57,22 +58,22 @@ export default function DotProductPage() {
         Divide the dot product by the lengths and you remove all magnitude
         information, keeping only the angle:
       </p>
-      <Block>{`\\cos\\theta = \\frac{\\mathbf{v} \\cdot \\mathbf{w}}{\\lVert \\mathbf{v} \\rVert \\, \\lVert \\mathbf{w} \\rVert}.`}</Block>
+      <Block>{tex`\cos\theta = \frac{\mathbf{v} \cdot \mathbf{w}}{\lVert \mathbf{v} \rVert \, \lVert \mathbf{w} \rVert}.`}</Block>
       <p>
         That ratio is what people usually mean by <em>cosine similarity</em>.
-        It ranges from <M>{`-1`}</M> (opposite) through <M>0</M>{" "}
+        It ranges from <M>{tex`-1`}</M> (opposite) through <M>0</M>{" "}
         (orthogonal) to <M>1</M> (same direction).
       </p>
 
       <h2>Projection: the shadow</h2>
       <p>
-        The <strong>projection</strong> of <M>{`\\mathbf{v}`}</M> onto{" "}
-        <M>{`\\mathbf{u}`}</M> is the closest vector to{" "}
-        <M>{`\\mathbf{v}`}</M> that lies along the line through{" "}
-        <M>{`\\mathbf{u}`}</M> — the shadow of <M>{`\\mathbf{v}`}</M> when
-        light shines perpendicular to <M>{`\\mathbf{u}`}</M>:
+        The <strong>projection</strong> of <M>{tex`\mathbf{v}`}</M> onto{" "}
+        <M>{tex`\mathbf{u}`}</M> is the closest vector to{" "}
+        <M>{tex`\mathbf{v}`}</M> that lies along the line through{" "}
+        <M>{tex`\mathbf{u}`}</M> — the shadow of <M>{tex`\mathbf{v}`}</M> when
+        light shines perpendicular to <M>{tex`\mathbf{u}`}</M>:
       </p>
-      <Block>{`\\text{proj}_{\\mathbf{u}}(\\mathbf{v}) = \\frac{\\mathbf{v} \\cdot \\mathbf{u}}{\\mathbf{u} \\cdot \\mathbf{u}}\\, \\mathbf{u}.`}</Block>
+      <Block>{tex`\text{proj}_{\mathbf{u}}(\mathbf{v}) = \frac{\mathbf{v} \cdot \mathbf{u}}{\mathbf{u} \cdot \mathbf{u}}\, \mathbf{u}.`}</Block>
       <p>
         Note the dot product appearing twice. Projection <em>is</em> a dot
         product, dressed up with a normalization.
@@ -91,25 +92,25 @@ export default function DotProductPage() {
       <Callout variant="mechinterp">
         <p>
           <strong>Logit lens.</strong> The unembedding{" "}
-          <M>{`W_U \\in \\mathbb{R}^{|V| \\times d}`}</M> turns a residual
-          stream <M>{`\\mathbf{x}`}</M> into a logit per token. The logit for
+          <M>{tex`W_U \in \mathbb{R}^{|V| \times d}`}</M> turns a residual
+          stream <M>{tex`\mathbf{x}`}</M> into a logit per token. The logit for
           token <M>k</M> is exactly the dot product of{" "}
-          <M>{`\\mathbf{x}`}</M> with the <M>k</M>-th row of{" "}
-          <M>{`W_U`}</M>. Each row is the &ldquo;direction in residual
+          <M>{tex`\mathbf{x}`}</M> with the <M>k</M>-th row of{" "}
+          <M>{tex`W_U`}</M>. Each row is the &ldquo;direction in residual
           space&rdquo; that promotes that token.
         </p>
         <p>
           <strong>Attention scores.</strong> Inside an attention head, the
-          score between query <M>{`\\mathbf{q}`}</M> and key{" "}
-          <M>{`\\mathbf{k}`}</M> is <M>{`\\mathbf{q} \\cdot \\mathbf{k} / \\sqrt{d_k}`}</M>{" "}
+          score between query <M>{tex`\mathbf{q}`}</M> and key{" "}
+          <M>{tex`\mathbf{k}`}</M> is <M>{tex`\mathbf{q} \cdot \mathbf{k} / \sqrt{d_k}`}</M>{" "}
           — a scaled dot product. Attention is, fundamentally, similarity by
           dot product.
         </p>
         <p>
           <strong>Probing.</strong> When you want to ask &ldquo;does this
           activation encode whether the sentence is positive?&rdquo; you fit
-          a probe vector <M>{`\\mathbf{p}`}</M> and read off{" "}
-          <M>{`\\mathbf{p} \\cdot \\mathbf{x}`}</M>. The probe is a
+          a probe vector <M>{tex`\mathbf{p}`}</M> and read off{" "}
+          <M>{tex`\mathbf{p} \cdot \mathbf{x}`}</M>. The probe is a
           direction; activation along it is the answer.
         </p>
       </Callout>
@@ -117,7 +118,7 @@ export default function DotProductPage() {
       <Quiz
         question={
           <>
-            If <M>{`\\mathbf{v} \\cdot \\mathbf{w} = 0`}</M> and neither is
+            If <M>{tex`\mathbf{v} \cdot \mathbf{w} = 0`}</M> and neither is
             zero, what can you conclude?
           </>
         }

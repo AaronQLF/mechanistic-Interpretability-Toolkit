@@ -41,3 +41,4 @@ export function M({ children, display = false, className }: MProps) {
 export function Block({ children, className }: { children: string; className?: string }) {
   return <M display className={className}>{children}</M>;
 }
+

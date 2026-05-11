@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { LinearSystemSolver } from "@/components/viz/LinearSystemSolver";
 
 export const metadata = {
@@ -21,16 +22,16 @@ export default function InversePage() {
       <h2>The inverse</h2>
       <p>
         The <strong>inverse</strong> of a square matrix <M>A</M>, written{" "}
-        <M>{`A^{-1}`}</M>, is the unique matrix satisfying:
+        <M>{tex`A^{-1}`}</M>, is the unique matrix satisfying:
       </p>
-      <Block>{`A^{-1} A = A A^{-1} = I.`}</Block>
+      <Block>{tex`A^{-1} A = A A^{-1} = I.`}</Block>
       <p>
         Geometrically: if <M>A</M> is some bending of space, then{" "}
-        <M>{`A^{-1}`}</M> bends it back. For 2×2:
+        <M>{tex`A^{-1}`}</M> bends it back. For 2×2:
       </p>
-      <Block>{`A^{-1} = \\frac{1}{\\det A} \\begin{bmatrix} d & -b \\\\ -c & a \\end{bmatrix}.`}</Block>
+      <Block>{tex`A^{-1} = \frac{1}{\det A} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}.`}</Block>
       <p>
-        That formula breaks the moment <M>{`\\det A = 0`}</M>. There&apos;s a
+        That formula breaks the moment <M>{tex`\det A = 0`}</M>. There&apos;s a
         good reason: a matrix with zero determinant has crushed a dimension
         away, and you can&apos;t un-crush.
       </p>
@@ -40,7 +41,7 @@ export default function InversePage() {
         A system of two equations in two unknowns is just one matrix
         equation:
       </p>
-      <Block>{`\\begin{cases} a\\,x + b\\,y = c \\\\ d\\,x + e\\,y = f \\end{cases} \\quad \\Longleftrightarrow \\quad \\begin{bmatrix} a & b \\\\ d & e \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} c \\\\ f \\end{bmatrix}.`}</Block>
+      <Block>{tex`\begin{cases} a\,x + b\,y = c \\ d\,x + e\,y = f \end{cases} \quad \Longleftrightarrow \quad \begin{bmatrix} a & b \\ d & e \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} c \\ f \end{bmatrix}.`}</Block>
       <p>
         Each equation is a line. The solution(s), if any, sit at the
         intersection. Three cases:
@@ -48,7 +49,7 @@ export default function InversePage() {
       <ul>
         <li>
           <strong>Unique solution.</strong> The lines cross at one point.
-          The matrix is invertible (<M>{`\\det \\ne 0`}</M>).
+          The matrix is invertible (<M>{tex`\det \ne 0`}</M>).
         </li>
         <li>
           <strong>No solution.</strong> Parallel lines. The matrix is

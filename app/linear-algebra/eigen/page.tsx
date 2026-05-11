@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { EigenFinder } from "@/components/viz/EigenFinder";
 
 export const metadata = {
@@ -21,14 +22,14 @@ export default function EigenPage() {
       <h2>The defining equation</h2>
       <p>
         An <strong>eigenvector</strong> of a matrix <M>M</M> is a nonzero
-        vector <M>{`\\mathbf{v}`}</M> that <M>M</M> only stretches:
+        vector <M>{tex`\mathbf{v}`}</M> that <M>M</M> only stretches:
       </p>
-      <Block>{`M \\mathbf{v} = \\lambda \\mathbf{v}.`}</Block>
+      <Block>{tex`M \mathbf{v} = \lambda \mathbf{v}.`}</Block>
       <p>
         The scalar <M>λ</M> is the corresponding <strong>eigenvalue</strong>.
         It says <em>by how much</em> the eigenvector gets stretched. Negative
-        eigenvalues flip; <M>{`|\\lambda| > 1`}</M> stretches; <M>{`|\\lambda| < 1`}</M>{" "}
-        shrinks; <M>{`\\lambda = 0`}</M> means the eigenvector lives in the
+        eigenvalues flip; <M>{tex`|\lambda| > 1`}</M> stretches; <M>{tex`|\lambda| < 1`}</M>{" "}
+        shrinks; <M>{tex`\lambda = 0`}</M> means the eigenvector lives in the
         null space.
       </p>
 
@@ -36,24 +37,24 @@ export default function EigenPage() {
       <p>
         Rearranging:
       </p>
-      <Block>{`(M - \\lambda I)\\mathbf{v} = \\mathbf{0}.`}</Block>
+      <Block>{tex`(M - \lambda I)\mathbf{v} = \mathbf{0}.`}</Block>
       <p>
-        For a nonzero <M>{`\\mathbf{v}`}</M> to satisfy this,{" "}
-        <M>{`M - \\lambda I`}</M> must be singular — its determinant must be
+        For a nonzero <M>{tex`\mathbf{v}`}</M> to satisfy this,{" "}
+        <M>{tex`M - \lambda I`}</M> must be singular — its determinant must be
         zero. That gives the <strong>characteristic equation</strong>:
       </p>
-      <Block>{`\\det(M - \\lambda I) = 0.`}</Block>
+      <Block>{tex`\det(M - \lambda I) = 0.`}</Block>
       <p>
         For a 2×2 matrix this becomes a quadratic in <M>λ</M>, with roots:
       </p>
-      <Block>{`\\lambda = \\frac{\\text{tr}(M) \\pm \\sqrt{\\text{tr}(M)^2 - 4 \\det(M)}}{2}.`}</Block>
+      <Block>{tex`\lambda = \frac{\text{tr}(M) \pm \sqrt{\text{tr}(M)^2 - 4 \det(M)}}{2}.`}</Block>
 
       <h2>See it move</h2>
       <p>
         In the widget below, the dashed pink lines are the eigen-directions.
-        Drag the blue vector <M>{`\\mathbf{v}`}</M> off the line and{" "}
-        <M>{`M\\mathbf{v}`}</M> swings to a new direction. Drag it{" "}
-        <em>onto</em> the dashed line and <M>{`M\\mathbf{v}`}</M> stays
+        Drag the blue vector <M>{tex`\mathbf{v}`}</M> off the line and{" "}
+        <M>{tex`M\mathbf{v}`}</M> swings to a new direction. Drag it{" "}
+        <em>onto</em> the dashed line and <M>{tex`M\mathbf{v}`}</M> stays
         parallel — only its length changes.
       </p>
 
@@ -85,7 +86,7 @@ export default function EigenPage() {
       <Quiz
         question={
           <>
-            For <M>{`M = \\begin{pmatrix} 3 & 0 \\\\ 0 & -1 \\end{pmatrix}`}</M>, what
+            For <M>{tex`M = \begin{pmatrix} 3 & 0 \\ 0 & -1 \end{pmatrix}`}</M>, what
             are the eigenvalues and eigenvectors?
           </>
         }

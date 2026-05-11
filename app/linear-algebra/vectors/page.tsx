@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { Vector2DPlayground } from "@/components/viz/Vector2DPlayground";
 
 export const metadata = {
@@ -34,7 +35,7 @@ export default function VectorsPage() {
         </li>
         <li>
           <strong>List.</strong> A vector is an ordered list of numbers, like{" "}
-          <M>{`(3, 2)`}</M>. This is what your code actually stores. A
+          <M>{tex`(3, 2)`}</M>. This is what your code actually stores. A
           768-dimensional residual stream is just a list of 768 numbers.
         </li>
         <li>
@@ -45,7 +46,7 @@ export default function VectorsPage() {
         </li>
       </ul>
 
-      <Block>{`\\mathbf{v} = \\begin{bmatrix} 3 \\\\ 2 \\end{bmatrix} \\quad \\Longleftrightarrow \\quad \\text{arrow from } (0,0) \\text{ to } (3, 2)`}</Block>
+      <Block>{tex`\mathbf{v} = \begin{bmatrix} 3 \\ 2 \end{bmatrix} \quad \Longleftrightarrow \quad \text{arrow from } (0,0) \text{ to } (3, 2)`}</Block>
 
       <h2>Drag the arrowhead</h2>
       <p>
@@ -61,7 +62,7 @@ export default function VectorsPage() {
           how those coordinates are read off.
         </li>
         <li>
-          The length <M>{`\\lVert \\mathbf{v} \\rVert`}</M> changes too,
+          The length <M>{tex`\lVert \mathbf{v} \rVert`}</M> changes too,
           following the Pythagorean theorem.
         </li>
       </ul>
@@ -72,11 +73,11 @@ export default function VectorsPage() {
 
       <h2>Notation</h2>
       <p>
-        We&apos;ll write vectors in bold like <M>{`\\mathbf{v}`}</M>, and
+        We&apos;ll write vectors in bold like <M>{tex`\mathbf{v}`}</M>, and
         sometimes as a column of numbers. The dimension <M>n</M> of a vector
         is just how many numbers are in the list:
       </p>
-      <Block>{`\\mathbf{v} \\in \\mathbb{R}^{n} \\quad \\text{means } \\mathbf{v} = \\begin{bmatrix} v_1 \\\\ v_2 \\\\ \\vdots \\\\ v_n \\end{bmatrix}.`}</Block>
+      <Block>{tex`\mathbf{v} \in \mathbb{R}^{n} \quad \text{means } \mathbf{v} = \begin{bmatrix} v_1 \\ v_2 \\ \vdots \\ v_n \end{bmatrix}.`}</Block>
 
       <Callout variant="intuition">
         In 2D and 3D you can <em>see</em> a vector. In 768D you can&apos;t —
@@ -89,7 +90,7 @@ export default function VectorsPage() {
         <p>
           A transformer&apos;s <strong>residual stream</strong> at one token
           position is a vector. In GPT-2 small it lives in{" "}
-          <M>{`\\mathbb{R}^{768}`}</M>; in larger models it&apos;s in
+          <M>{tex`\mathbb{R}^{768}`}</M>; in larger models it&apos;s in
           thousands of dimensions. Every layer reads from this vector and
           writes back to it.
         </p>
@@ -105,7 +106,7 @@ export default function VectorsPage() {
         question={
           <>
             You move a vector&apos;s tail from the origin to{" "}
-            <M>{`(2, 1)`}</M> without changing its length or direction. What
+            <M>{tex`(2, 1)`}</M> without changing its length or direction. What
             happened to the vector?
           </>
         }

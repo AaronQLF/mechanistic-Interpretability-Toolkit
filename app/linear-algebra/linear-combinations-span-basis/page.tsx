@@ -3,6 +3,7 @@ import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { SpanExplorer } from "@/components/viz/SpanExplorer";
 
 export const metadata = {
@@ -21,10 +22,10 @@ export default function SpanPage() {
       <h2>Linear combinations</h2>
       <p>
         A <strong>linear combination</strong> of vectors{" "}
-        <M>{`\\mathbf{v}_1, \\mathbf{v}_2, \\ldots`}</M> is anything you can
+        <M>{tex`\mathbf{v}_1, \mathbf{v}_2, \ldots`}</M> is anything you can
         build by scaling each one and adding them up:
       </p>
-      <Block>{`a_1 \\mathbf{v}_1 + a_2 \\mathbf{v}_2 + \\cdots + a_k \\mathbf{v}_k.`}</Block>
+      <Block>{tex`a_1 \mathbf{v}_1 + a_2 \mathbf{v}_2 + \cdots + a_k \mathbf{v}_k.`}</Block>
       <p>
         That&apos;s it. Pick scalars, multiply, sum. The set of <em>all</em>{" "}
         such combinations — every vector you can possibly produce this way —
@@ -35,7 +36,7 @@ export default function SpanPage() {
       <p>
         Drag the two arrows below. As long as they don&apos;t lie on the same
         line, the scalars <M>a</M> and <M>b</M> let you reach every point in
-        the plane — their span is all of <M>{`\\mathbb{R}^2`}</M>. Drag one
+        the plane — their span is all of <M>{tex`\mathbb{R}^2`}</M>. Drag one
         arrow on top of the other and watch the shaded region collapse to a
         line: when vectors are <em>collinear</em>, you&apos;ve lost a
         dimension.
@@ -49,10 +50,10 @@ export default function SpanPage() {
       <p>
         A set of vectors is <strong>linearly independent</strong> if none of
         them can be written as a combination of the others. In{" "}
-        <M>{`\\mathbb{R}^2`}</M>, two vectors are independent precisely when
+        <M>{tex`\mathbb{R}^2`}</M>, two vectors are independent precisely when
         they&apos;re not collinear. The formal version:
       </p>
-      <Block>{`a_1 \\mathbf{v}_1 + a_2 \\mathbf{v}_2 + \\cdots + a_k \\mathbf{v}_k = \\mathbf{0} \\quad \\Longrightarrow \\quad a_1 = a_2 = \\cdots = a_k = 0.`}</Block>
+      <Block>{tex`a_1 \mathbf{v}_1 + a_2 \mathbf{v}_2 + \cdots + a_k \mathbf{v}_k = \mathbf{0} \quad \Longrightarrow \quad a_1 = a_2 = \cdots = a_k = 0.`}</Block>
       <p>
         In words: the only way to combine them down to zero is the trivial
         way.
@@ -66,12 +67,12 @@ export default function SpanPage() {
         <strong>dimension</strong>.
       </p>
       <p>
-        The most familiar basis in <M>{`\\mathbb{R}^2`}</M> is the{" "}
+        The most familiar basis in <M>{tex`\mathbb{R}^2`}</M> is the{" "}
         <em>standard basis</em>:
       </p>
-      <Block>{`\\mathbf{e}_1 = \\begin{bmatrix} 1 \\\\ 0 \\end{bmatrix}, \\quad \\mathbf{e}_2 = \\begin{bmatrix} 0 \\\\ 1 \\end{bmatrix}.`}</Block>
+      <Block>{tex`\mathbf{e}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \quad \mathbf{e}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}.`}</Block>
       <p>
-        Every vector <M>{`(x, y) = x\\mathbf{e}_1 + y\\mathbf{e}_2`}</M>. But
+        Every vector <M>{tex`(x, y) = x\mathbf{e}_1 + y\mathbf{e}_2`}</M>. But
         plenty of other pairs work as bases too — and choosing a different
         basis is exactly what lets you see a model from a new angle.
       </p>
@@ -85,7 +86,7 @@ export default function SpanPage() {
       <Callout variant="mechinterp">
         <p>
           A transformer&apos;s residual stream lives in{" "}
-          <M>{`\\mathbb{R}^d`}</M>, but the model is trying to represent far
+          <M>{tex`\mathbb{R}^d`}</M>, but the model is trying to represent far
           more than <M>d</M> features. It does this by giving each feature its
           own <strong>direction</strong> — its own vector in residual space.
         </p>

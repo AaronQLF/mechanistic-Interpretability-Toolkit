@@ -2,6 +2,7 @@ import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
 import { Figure } from "@/components/content/Figure";
 import { Block, M } from "@/components/math/Math";
+import { tex } from "@/lib/tex";
 import { SuperpositionToy } from "@/components/viz/SuperpositionToy";
 
 export const metadata = {
@@ -22,12 +23,12 @@ export default function MechInterpBridgePage() {
         At every token position in a transformer there&apos;s a vector,
         called the <strong>residual stream</strong>:
       </p>
-      <Block>{`\\mathbf{x}_{\\ell} \\in \\mathbb{R}^{d_{\\text{model}}}.`}</Block>
+      <Block>{tex`\mathbf{x}_{\ell} \in \mathbb{R}^{d_{\text{model}}}.`}</Block>
       <p>
-        Each layer reads from <M>{`\\mathbf{x}_{\\ell}`}</M>, computes
+        Each layer reads from <M>{tex`\mathbf{x}_{\ell}`}</M>, computes
         something, and adds the result back:
       </p>
-      <Block>{`\\mathbf{x}_{\\ell+1} = \\mathbf{x}_{\\ell} + \\text{Attn}(\\mathbf{x}_{\\ell}) + \\text{MLP}(\\mathbf{x}_{\\ell}).`}</Block>
+      <Block>{tex`\mathbf{x}_{\ell+1} = \mathbf{x}_{\ell} + \text{Attn}(\mathbf{x}_{\ell}) + \text{MLP}(\mathbf{x}_{\ell}).`}</Block>
       <p>
         Two chapters of this module justified that{" "}
         <em>vector addition is composition</em>: the contribution of any
@@ -38,18 +39,18 @@ export default function MechInterpBridgePage() {
 
       <h2>The logit lens is a linear map</h2>
       <p>
-        The unembedding matrix <M>{`W_U \\in \\mathbb{R}^{|V| \\times d}`}</M>{" "}
+        The unembedding matrix <M>{tex`W_U \in \mathbb{R}^{|V| \times d}`}</M>{" "}
         turns a residual stream into logits:
       </p>
-      <Block>{`\\text{logits} = W_U\\, \\mathbf{x}.`}</Block>
+      <Block>{tex`\text{logits} = W_U\, \mathbf{x}.`}</Block>
       <p>
-        Each row <M>{`(W_U)_k`}</M> is the <strong>direction</strong> in
+        Each row <M>{tex`(W_U)_k`}</M> is the <strong>direction</strong> in
         residual space that promotes token <M>k</M>. The logit for token{" "}
         <M>k</M> is the dot product:
       </p>
-      <Block>{`\\text{logit}_k = (W_U)_k \\cdot \\mathbf{x}.`}</Block>
+      <Block>{tex`\text{logit}_k = (W_U)_k \cdot \mathbf{x}.`}</Block>
       <p>
-        The <em>logit lens</em> trick is to apply <M>{`W_U`}</M> at every
+        The <em>logit lens</em> trick is to apply <M>{tex`W_U`}</M> at every
         layer, not just the last one, to see what tokens the residual stream
         is &ldquo;leaning toward&rdquo; partway through the network. It
         works because of nothing more than{" "}
@@ -59,13 +60,13 @@ export default function MechInterpBridgePage() {
       <h2>Attention as low-rank circuits</h2>
       <p>
         Each attention head has four parameter matrices —{" "}
-        <M>{`W_Q`}</M>, <M>{`W_K`}</M>, <M>{`W_V`}</M>, <M>{`W_O`}</M> —
-        with an inner dimension <M>{`d_{\\text{head}} \\ll d_{\\text{model}}`}</M>.
+        <M>{tex`W_Q`}</M>, <M>{tex`W_K`}</M>, <M>{tex`W_V`}</M>, <M>{tex`W_O`}</M> —
+        with an inner dimension <M>{tex`d_{\text{head}} \ll d_{\text{model}}`}</M>.
         Two products turn out to be more interpretable than the parts:
       </p>
-      <Block>{`\\underbrace{W_O W_V}_{\\text{OV circuit}}, \\qquad \\underbrace{W_Q^{\\top} W_K}_{\\text{QK circuit}}.`}</Block>
+      <Block>{tex`\underbrace{W_O W_V}_{\text{OV circuit}}, \qquad \underbrace{W_Q^{\top} W_K}_{\text{QK circuit}}.`}</Block>
       <p>
-        Both are <strong>at most rank{" "}<M>{`d_{\\text{head}}`}</M></strong>{" "}
+        Both are <strong>at most rank{" "}<M>{tex`d_{\text{head}}`}</M></strong>{" "}
         — they&apos;re skinny products of skinny matrices. The SVD chapter
         gave us the language for this: the OV circuit reads from a low-rank
         subspace of residual space and writes back to a low-rank subspace
@@ -76,7 +77,7 @@ export default function MechInterpBridgePage() {
       <h2>Superposition, intuitively</h2>
       <p>
         A transformer has{" "}
-        <M>{`d_{\\text{model}}`}</M> dimensions but is asked to represent
+        <M>{tex`d_{\text{model}}`}</M> dimensions but is asked to represent
         thousands of distinct features (concepts, syntactic roles, world
         states). The number of features can vastly exceed the dimension.
       </p>
