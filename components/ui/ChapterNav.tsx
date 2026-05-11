@@ -5,26 +5,27 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Chapter } from "@/lib/topics";
 
-const STORAGE_KEY = "mit:la:visited";
-
 export function ChapterNav({
   moduleSlug,
+  moduleTitle,
   chapters,
 }: {
   moduleSlug: string;
+  moduleTitle: string;
   chapters: Chapter[];
 }) {
   const pathname = usePathname();
+  const storageKey = `mit:${moduleSlug}:visited`;
   const [visited, setVisited] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(storageKey);
       if (raw) setVisited(new Set(JSON.parse(raw) as string[]));
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     const match = chapters.find((c) =>
@@ -36,13 +37,13 @@ export function ChapterNav({
       const next = new Set(prev);
       next.add(match.slug);
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
+        localStorage.setItem(storageKey, JSON.stringify([...next]));
       } catch {
         /* ignore */
       }
       return next;
     });
-  }, [pathname, chapters, moduleSlug]);
+  }, [pathname, chapters, moduleSlug, storageKey]);
 
   return (
     <nav className="thin-scroll sticky top-16 max-h-[calc(100vh-5rem)] overflow-y-auto pr-2 font-sans text-sm">
@@ -50,7 +51,7 @@ export function ChapterNav({
         href={`/${moduleSlug}`}
         className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-accent hover:underline"
       >
-        Linear Algebra
+        {moduleTitle}
       </Link>
       <ol className="space-y-0.5">
         {chapters.map((c, i) => {

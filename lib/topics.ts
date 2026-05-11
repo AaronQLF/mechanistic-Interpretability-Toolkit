@@ -89,6 +89,69 @@ export const linearAlgebraChapters: Chapter[] = [
   },
 ];
 
+export const probabilityChapters: Chapter[] = [
+  {
+    slug: "sample-spaces",
+    title: "Sample spaces & events",
+    blurb:
+      "Outcomes, events, and the three rules every probability obeys — the bedrock the rest sits on.",
+  },
+  {
+    slug: "distributions",
+    title: "Random variables & distributions",
+    blurb:
+      "A distribution is just a list of probabilities. Drag the bars and see what changes.",
+  },
+  {
+    slug: "joint-marginal-conditional",
+    title: "Joint, marginal & conditional",
+    blurb:
+      "Two variables, one table. Marginals sum the rows; conditionals slice them.",
+  },
+  {
+    slug: "bayes",
+    title: "Bayes' rule",
+    blurb:
+      "Prior × likelihood ∝ posterior — how a belief should shift when evidence arrives.",
+  },
+  {
+    slug: "expectation-variance",
+    title: "Expectation, variance & the law of large numbers",
+    blurb:
+      "The mean of a random variable, its spread, and why averages of samples concentrate.",
+  },
+  {
+    slug: "softmax",
+    title: "From scores to probabilities: softmax",
+    blurb:
+      "How a vector of real numbers becomes a distribution — and what temperature actually does.",
+  },
+  {
+    slug: "entropy",
+    title: "Entropy",
+    blurb:
+      "How surprising a distribution is, measured in bits. The thing a language model is trying to minimize.",
+  },
+  {
+    slug: "cross-entropy-kl",
+    title: "Cross-entropy & KL divergence",
+    blurb:
+      "Comparing two distributions: the loss every classifier minimizes, and the asymmetric distance behind it.",
+  },
+  {
+    slug: "sampling",
+    title: "Sampling: greedy, temperature, top-k, top-p",
+    blurb:
+      "Four ways to turn a next-token distribution into a token. Each one is a knob.",
+  },
+  {
+    slug: "mech-interp-bridge",
+    title: "Capstone: probability in mech interp",
+    blurb:
+      "Logit lens, attention as a distribution, KL of ablations, and what calibration buys you.",
+  },
+];
+
 export const modules: Module[] = [
   {
     slug: "linear-algebra",
@@ -101,9 +164,10 @@ export const modules: Module[] = [
   {
     slug: "probability",
     title: "Probability",
-    status: "soon",
+    status: "available",
     blurb:
       "Distributions, expectation, KL divergence, and what 'logits' really mean.",
+    chapters: probabilityChapters,
   },
   {
     slug: "calculus",

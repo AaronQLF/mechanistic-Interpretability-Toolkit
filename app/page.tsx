@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { CurriculumMap } from "@/components/ui/CurriculumMap";
-import { linearAlgebraChapters, modules } from "@/lib/topics";
+import {
+  linearAlgebraChapters,
+  modules,
+  probabilityChapters,
+} from "@/lib/topics";
 
 export default function HomePage() {
   return (
@@ -32,16 +36,21 @@ export default function HomePage() {
               <span aria-hidden>→</span>
             </Link>
             <Link
-              href="/linear-algebra/mech-interp-bridge"
+              href="/probability"
               className="inline-flex items-center gap-2 rounded-md border border-line px-5 py-2.5 font-sans text-sm font-medium text-ink-muted transition hover:border-ink-muted hover:text-ink"
             >
-              Skip to the mech-interp bridge
+              Or jump into Probability →
             </Link>
           </div>
           <dl className="mt-10 grid grid-cols-3 gap-6 text-sm">
-            <Stat label="Modules" value="6" />
-            <Stat label="LA chapters" value={String(linearAlgebraChapters.length)} />
-            <Stat label="Interactive widgets" value="14+" />
+            <Stat label="Modules live" value="2 / 6" />
+            <Stat
+              label="Chapters"
+              value={String(
+                linearAlgebraChapters.length + probabilityChapters.length
+              )}
+            />
+            <Stat label="Interactive widgets" value="25+" />
           </dl>
         </div>
 
@@ -50,8 +59,8 @@ export default function HomePage() {
             Curriculum map
           </h2>
           <p className="mt-1 font-serif text-sm text-ink-muted">
-            Linear Algebra is shipping today. The rest is on its way — same
-            voice, same feel.
+            Linear Algebra and Probability are live today. The rest is on
+            its way — same voice, same feel.
           </p>
           <div className="mt-4">
             <CurriculumMap />
@@ -81,6 +90,45 @@ export default function HomePage() {
             <Link
               key={c.slug}
               href={`/linear-algebra/${c.slug}`}
+              className="group block rounded-lg border border-line bg-paper-raised p-4 transition hover:border-ink-muted"
+            >
+              <div className="flex items-center gap-2 font-mono text-xs text-ink-subtle">
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <span className="h-px flex-1 bg-line" />
+              </div>
+              <h3 className="mt-2 font-sans text-base font-semibold text-ink group-hover:text-accent">
+                {c.title}
+              </h3>
+              <p className="mt-1 font-serif text-sm leading-relaxed text-ink-muted">
+                {c.blurb}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-20">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              New
+            </p>
+            <h2 className="mt-2 font-sans text-3xl font-semibold tracking-tight text-ink">
+              Probability — distributions, entropy, and the loss
+            </h2>
+          </div>
+          <Link
+            href="/probability"
+            className="hidden font-sans text-sm font-medium text-ink-muted transition hover:text-accent sm:inline"
+          >
+            See all chapters →
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {probabilityChapters.slice(0, 6).map((c, i) => (
+            <Link
+              key={c.slug}
+              href={`/probability/${c.slug}`}
               className="group block rounded-lg border border-line bg-paper-raised p-4 transition hover:border-ink-muted"
             >
               <div className="flex items-center gap-2 font-mono text-xs text-ink-subtle">

@@ -17,7 +17,18 @@ An interactive textbook for the math behind mechanistic interpretability — sta
   - Eigenvalues & eigenvectors → drag a 2×2, highlighted eigenlines
   - SVD → step through rotate / stretch / rotate, low-rank slider
   - Capstone → residual stream, logit lens, OV/QK circuits, superposition toy
-- **Curriculum map** on the landing page with stub pages for the upcoming Probability, Calculus, Neural Networks, Transformers, and Mech-interp Circuits modules.
+- **Probability** module (9 chapters + capstone), same shape as LA:
+  - Sample spaces & events → two-dice grid, click outcomes to define events
+  - Random variables & distributions → draggable categorical PMF
+  - Joint, marginal & conditional → 4×4 heatmap with hover-to-slice conditionals
+  - Bayes' rule → prior × likelihood → posterior, with the rare-disease classic
+  - Expectation, variance & LLN → live E/Var, running sample-mean trace with √n band
+  - Softmax → drag logits, sweep temperature
+  - Entropy → distribution + entropy meter in bits, perplexity readout
+  - Cross-entropy & KL divergence → two side-by-side distributions, live H(P,Q) and both KLs
+  - Sampling: greedy / temperature / top-k / top-p → see what each strategy keeps
+  - Capstone → toy logit lens with ablation and KL(clean ‖ ablated)
+- **Curriculum map** on the landing page with stub pages for the upcoming Calculus, Neural Networks, Transformers, and Mech-interp Circuits modules.
 - Light + dark mode, persistent chapter progress dots (localStorage), responsive layout.
 
 ## Tech
@@ -53,7 +64,8 @@ The site is fully static — deploy to Vercel, Cloudflare Pages, Netlify, or any
 app/                          # routes
   page.tsx                    # landing
   linear-algebra/             # LA module + 12 chapter pages
-  probability/, calculus/, ...# stubs
+  probability/                # Probability module + 10 chapter pages
+  calculus/, ...              # stubs
 components/
   ui/                         # header, footer, sidebar, theme toggle, curriculum map
   content/                    # ChapterShell, Section, Callout, Quiz, Exercise, Figure
@@ -61,6 +73,7 @@ components/
   viz/                        # interactive SVG widgets (one per concept)
 lib/
   linalg.ts                   # vec/mat math (pure, no deps)
+  prob.ts                     # softmax / entropy / KL / sampling helpers
   geometry.ts                 # world↔screen transforms
   topics.ts                   # curriculum metadata
 ```
