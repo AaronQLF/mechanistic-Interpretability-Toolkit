@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -91,6 +92,100 @@ export default function MatricesPage() {
           { id: "b", label: "Sends it to (1, 1).", explain: "Identity would do that — but this matrix doubles every coordinate." },
           { id: "c", label: "Sends it to (4, 0).", explain: "That ignores the contribution from e₂." },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>The rotation matrix derives the trig sum
+              identities.</strong>
+            </p>
+            <p>
+              Let <M>{tex`R_{\theta}`}</M> be the matrix that rotates
+              every vector in <M>{tex`\mathbb{R}^{2}`}</M>{" "}
+              counter-clockwise by angle <M>{tex`\theta`}</M>.
+            </p>
+            <p>
+              <strong>(a)</strong> Using only the rule &ldquo;the columns
+              of a matrix are the images of the basis vectors,&rdquo;
+              derive
+            </p>
+            <Block>{tex`R_{\theta} = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}.`}</Block>
+            <p>
+              <strong>(b)</strong> Apply <M>{tex`R_{\beta}`}</M> first,
+              then <M>{tex`R_{\alpha}`}</M> to the basis vector{" "}
+              <M>{tex`\mathbf{e}_{1}`}</M>. The result must equal{" "}
+              <M>{tex`R_{\alpha + \beta}\, \mathbf{e}_{1}`}</M> (a
+              rotation by <M>{tex`\alpha`}</M> following one by{" "}
+              <M>{tex`\beta`}</M> is a rotation by{" "}
+              <M>{tex`\alpha + \beta`}</M>). Equate components.
+            </p>
+            <p>
+              <strong>(c)</strong> Conclude
+            </p>
+            <Block>{tex`\cos(\alpha + \beta) = \cos\alpha \cos\beta - \sin\alpha \sin\beta,`}</Block>
+            <Block>{tex`\sin(\alpha + \beta) = \sin\alpha \cos\beta + \cos\alpha \sin\beta.`}</Block>
+            <p>
+              The trig sum identities are not a fact about angles —
+              they are a fact about how rotations compose.
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a), draw <M>{tex`\mathbf{e}_{1}`}</M> on the unit
+            circle and rotate by <M>{tex`\theta`}</M>; its head lands at{" "}
+            <M>{tex`(\cos\theta, \sin\theta)`}</M>. Then rotate{" "}
+            <M>{tex`\mathbf{e}_{2}`}</M>. For (b), compute{" "}
+            <M>{tex`R_{\alpha}\bigl(R_{\beta}\, \mathbf{e}_{1}\bigr)`}</M>
+            {" "}using the matrix-on-vector rule from this chapter.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong>{" "}
+              <M>{tex`\mathbf{e}_{1} = (1, 0)`}</M> sits on the unit
+              circle at angle 0. Rotating by <M>{tex`\theta`}</M>{" "}
+              moves it to angle <M>{tex`\theta`}</M>, i.e.{" "}
+              <M>{tex`(\cos\theta, \sin\theta)`}</M>. Similarly{" "}
+              <M>{tex`\mathbf{e}_{2}`}</M> at angle{" "}
+              <M>{tex`\pi/2`}</M> moves to angle{" "}
+              <M>{tex`\pi/2 + \theta`}</M>, i.e.{" "}
+              <M>{tex`(-\sin\theta, \cos\theta)`}</M>. Stack these as
+              columns to get <M>{tex`R_{\theta}`}</M>.
+            </p>
+            <p>
+              <strong>(b)</strong>{" "}
+              <M>{tex`R_{\beta}\, \mathbf{e}_{1} = (\cos\beta, \sin\beta)`}</M>.
+              Apply <M>{tex`R_{\alpha}`}</M>:
+            </p>
+            <Block>{tex`R_{\alpha} \begin{bmatrix} \cos\beta \\ \sin\beta \end{bmatrix} = \begin{bmatrix} \cos\alpha \cos\beta - \sin\alpha \sin\beta \\ \sin\alpha \cos\beta + \cos\alpha \sin\beta \end{bmatrix}.`}</Block>
+            <p>
+              On the other hand, applying{" "}
+              <M>{tex`R_{\alpha + \beta}`}</M> directly to{" "}
+              <M>{tex`\mathbf{e}_{1}`}</M> gives{" "}
+              <M>{tex`(\cos(\alpha + \beta), \sin(\alpha + \beta))`}</M>.
+            </p>
+            <p>
+              <strong>(c)</strong> Two columns of two ways must match.
+              The first components give the cosine identity; the second
+              components give the sine identity.
+            </p>
+            <p>
+              The lesson reaches further than trig: any time a group of
+              transformations is closed under composition, equating
+              &ldquo;do them in sequence&rdquo; with &ldquo;do the
+              composed one&rdquo; produces algebraic identities for free.
+              In a transformer, the same trick recovers identities for
+              positional encodings (the rotation matrices behind RoPE),
+              for orthogonal weight reparameterisations, and for any
+              place where a structured matrix family commutes with
+              itself.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

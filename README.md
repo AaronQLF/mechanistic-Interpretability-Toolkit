@@ -28,7 +28,17 @@ An interactive textbook for the math behind mechanistic interpretability — sta
   - Cross-entropy & KL divergence → two side-by-side distributions, live H(P,Q) and both KLs
   - Sampling: greedy / temperature / top-k / top-p → see what each strategy keeps
   - Capstone → toy logit lens with ablation and KL(clean ‖ ablated)
-- **Curriculum map** on the landing page with stub pages for the upcoming Calculus, Neural Networks, Transformers, and Mech-interp Circuits modules.
+- **Calculus** module (8 chapters + capstone), same shape:
+  - Limits & continuity → slide h → 0 across removable holes, sinc, and jumps
+  - The derivative → drag x₀, watch the tangent follow on x², x³, sin, σ, ReLU
+  - The chain rule → three-panel composition with live g ′(x), h ′(y), and their product
+  - Partial derivatives & the gradient → 2D heatmap with gradient arrows, draggable probe
+  - Directional derivatives → drag the direction, see ∇F · u swing between ±‖∇F‖
+  - The Jacobian → smooth 2D map applied to a square; local linearisation vs true image
+  - Gradient descent → animated trajectory on bowl, ellipse, saddle, and Rosenbrock banana
+  - Backpropagation → small computation graph with forward values and backward gradients on every edge
+  - Capstone → integrated gradients with path samples and completeness check
+- **Curriculum map** on the landing page with stub pages for the upcoming Neural Networks, Transformers, and Mech-interp Circuits modules.
 - Light + dark mode, persistent chapter progress dots (localStorage), responsive layout.
 
 ## Tech
@@ -65,7 +75,8 @@ app/                          # routes
   page.tsx                    # landing
   linear-algebra/             # LA module + 12 chapter pages
   probability/                # Probability module + 10 chapter pages
-  calculus/, ...              # stubs
+  calculus/                   # Calculus module + 9 chapter pages
+  neural-networks/, ...       # stubs
 components/
   ui/                         # header, footer, sidebar, theme toggle, curriculum map
   content/                    # ChapterShell, Section, Callout, Quiz, Exercise, Figure
@@ -74,6 +85,7 @@ components/
 lib/
   linalg.ts                   # vec/mat math (pure, no deps)
   prob.ts                     # softmax / entropy / KL / sampling helpers
+  calc.ts                     # numeric derivatives + named function library
   geometry.ts                 # world↔screen transforms
   topics.ts                   # curriculum metadata
 ```

@@ -29,9 +29,10 @@ export function ComingSoon({
 
       <div className="mt-10 rounded-lg border border-line bg-paper-raised p-5">
         <p className="font-sans text-sm text-ink-muted">
-          In the meantime, the <strong>Linear Algebra</strong> and{" "}
-          <strong>Probability</strong> modules are fully shipped. Start
-          there — the building blocks for everything below come from them.
+          In the meantime, the <strong>Linear Algebra</strong>,{" "}
+          <strong>Probability</strong>, and <strong>Calculus</strong>{" "}
+          modules are fully shipped. Start there — the building blocks
+          for everything below come from them.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
@@ -45,6 +46,12 @@ export function ComingSoon({
             className="inline-flex items-center gap-2 rounded-md border border-line px-4 py-2 font-sans text-sm font-medium text-ink-muted transition hover:border-ink-muted hover:text-ink"
           >
             Open Probability <span aria-hidden>→</span>
+          </Link>
+          <Link
+            href="/calculus"
+            className="inline-flex items-center gap-2 rounded-md border border-line px-4 py-2 font-sans text-sm font-medium text-ink-muted transition hover:border-ink-muted hover:text-ink"
+          >
+            Open Calculus <span aria-hidden>→</span>
           </Link>
         </div>
       </div>

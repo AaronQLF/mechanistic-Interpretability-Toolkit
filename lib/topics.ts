@@ -82,10 +82,73 @@ export const linearAlgebraChapters: Chapter[] = [
       "Every linear map = rotate, stretch, rotate. The Swiss Army knife of mech interp.",
   },
   {
+    slug: "theorems",
+    title: "Theorems & proofs",
+    blurb:
+      "The big results that hold everything else up. Each statement comes with a toggleable proof and an interactive demo.",
+  },
+  {
     slug: "mech-interp-bridge",
     title: "Capstone: the mech-interp bridge",
     blurb:
       "Residual streams, logit lens, superposition, and low-rank circuits — all in the language you just learned.",
+  },
+];
+
+export const calculusChapters: Chapter[] = [
+  {
+    slug: "limits",
+    title: "Limits & continuity",
+    blurb:
+      "What it means to 'approach' a value, and why calculus needs that idea before it needs anything else.",
+  },
+  {
+    slug: "derivative",
+    title: "The derivative",
+    blurb:
+      "Instantaneous rate of change as a limit of slopes — drag the point and watch the tangent line follow.",
+  },
+  {
+    slug: "chain-rule",
+    title: "The chain rule",
+    blurb:
+      "Compose two functions; the derivative of the composition is the product of derivatives. This is the rule.",
+  },
+  {
+    slug: "gradient",
+    title: "Partial derivatives & the gradient",
+    blurb:
+      "Many-variable derivatives, packed into a single vector pointing uphill.",
+  },
+  {
+    slug: "directional-derivative",
+    title: "Directional derivatives",
+    blurb:
+      "How fast the function changes along an arbitrary direction — a dot product with the gradient.",
+  },
+  {
+    slug: "jacobian",
+    title: "The Jacobian",
+    blurb:
+      "Every smooth map is locally linear. The Jacobian is that local linear map.",
+  },
+  {
+    slug: "gradient-descent",
+    title: "Gradient descent",
+    blurb:
+      "Walk downhill in small steps. Tune the step size, pick a function, watch the path.",
+  },
+  {
+    slug: "backprop",
+    title: "Backpropagation",
+    blurb:
+      "The chain rule applied to a computation graph — the algorithm that trains every neural network.",
+  },
+  {
+    slug: "mech-interp-bridge",
+    title: "Capstone: calculus in mech interp",
+    blurb:
+      "Saliency maps, integrated gradients, attribution patching, and what gradients actually tell you about a model.",
   },
 ];
 
@@ -172,9 +235,10 @@ export const modules: Module[] = [
   {
     slug: "calculus",
     title: "Calculus",
-    status: "soon",
+    status: "available",
     blurb:
       "Gradients, the chain rule, and how a network learns.",
+    chapters: calculusChapters,
   },
   {
     slug: "neural-networks",

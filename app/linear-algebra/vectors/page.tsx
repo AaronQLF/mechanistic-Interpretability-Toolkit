@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -131,6 +132,88 @@ export default function VectorsPage() {
               "Translation preserves length. Only stretching or shrinking changes ‖v‖.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>The parallelogram identity, and the median of a
+              triangle.</strong>
+            </p>
+            <p>
+              <strong>(a)</strong> Let{" "}
+              <M>{tex`\mathbf{v}, \mathbf{w} \in \mathbb{R}^{n}`}</M>.
+              Working only from the coordinate definition{" "}
+              <M>{tex`\|\mathbf{v}\|^{2} = \sum_{i} v_{i}^{2}`}</M>,
+              prove
+            </p>
+            <Block>{tex`\|\mathbf{v} + \mathbf{w}\|^{2} + \|\mathbf{v} - \mathbf{w}\|^{2} = 2\|\mathbf{v}\|^{2} + 2\|\mathbf{w}\|^{2}.`}</Block>
+            <p>
+              <strong>(b)</strong> Use (a) to prove{" "}
+              <strong>Apollonius&apos; median formula</strong>: in a
+              triangle with vertices <M>A</M>, <M>B</M>, <M>C</M>, let{" "}
+              <M>M</M> be the midpoint of side <M>BC</M> and let{" "}
+              <M>{tex`m = \|AM\|`}</M>. Show that
+            </p>
+            <Block>{tex`m^{2} = \frac{2\|AB\|^{2} + 2\|AC\|^{2} - \|BC\|^{2}}{4}.`}</Block>
+            <p>
+              <strong>(c)</strong> Conclude that knowing all three side
+              lengths of a triangle pins down every median&apos;s length —
+              <em>without</em> trigonometry.
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (b), put the triangle&apos;s vertices at vectors{" "}
+            <M>{tex`\mathbf{a}, \mathbf{b}, \mathbf{c}`}</M> from a
+            convenient origin and write{" "}
+            <M>{tex`M = (\mathbf{b} + \mathbf{c})/2`}</M>. The median is{" "}
+            <M>{tex`\mathbf{m} = M - \mathbf{a}`}</M>. Apply the
+            identity from (a) cleverly to <M>{tex`\mathbf{b} - \mathbf{a}`}</M>{" "}
+            and <M>{tex`\mathbf{c} - \mathbf{a}`}</M>.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> Expand componentwise:
+            </p>
+            <Block>{tex`\|\mathbf{v} \pm \mathbf{w}\|^{2} = \sum_{i}(v_{i} \pm w_{i})^{2} = \sum_{i} v_{i}^{2} \pm 2\sum_{i} v_{i} w_{i} + \sum_{i} w_{i}^{2}.`}</Block>
+            <p>
+              Adding the <M>+</M> and <M>-</M> versions, the cross
+              terms cancel and you&apos;re left with{" "}
+              <M>{tex`2\|\mathbf{v}\|^{2} + 2\|\mathbf{w}\|^{2}`}</M>.
+            </p>
+            <p>
+              <strong>(b)</strong> Place <M>A</M> at the origin and let{" "}
+              <M>{tex`\mathbf{b} = B - A`}</M>,{" "}
+              <M>{tex`\mathbf{c} = C - A`}</M>. The midpoint of <M>BC</M>{" "}
+              is <M>{tex`M = (\mathbf{b} + \mathbf{c})/2`}</M> and{" "}
+              <M>{tex`BC = \mathbf{c} - \mathbf{b}`}</M>. Apply (a) with{" "}
+              <M>{tex`\mathbf{v} = \mathbf{b}`}</M>,{" "}
+              <M>{tex`\mathbf{w} = \mathbf{c}`}</M>:
+            </p>
+            <Block>{tex`\|\mathbf{b} + \mathbf{c}\|^{2} + \|\mathbf{c} - \mathbf{b}\|^{2} = 2\|\mathbf{b}\|^{2} + 2\|\mathbf{c}\|^{2}.`}</Block>
+            <p>
+              The first term is{" "}
+              <M>{tex`\|\mathbf{b} + \mathbf{c}\|^{2} = \|2 M\|^{2} = 4 m^{2}`}</M>;
+              the second is <M>{tex`\|BC\|^{2}`}</M>; and the right side
+              is <M>{tex`2\|AB\|^{2} + 2\|AC\|^{2}`}</M>. Solve for{" "}
+              <M>{tex`m^{2}`}</M>.
+            </p>
+            <p>
+              <strong>(c)</strong> Direct: every term on the right of
+              the formula is determined by side lengths alone, so{" "}
+              <M>m</M> is too. Trigonometry never enters; the algebra of
+              vectors does the whole job. This is the same engine that
+              lets a transformer compute meaningful similarity from raw
+              coordinates without ever &ldquo;knowing&rdquo; the angles
+              involved.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

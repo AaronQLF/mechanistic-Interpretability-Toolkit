@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -123,6 +124,125 @@ export default function SpanPage() {
               "The zero vector is never independent of anything, but the answer is more general — three vectors in ℝ² can never be independent.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>The fundamental dimension theorem.</strong>
+            </p>
+            <p>
+              <strong>(a)</strong> Prove that any{" "}
+              <M>{tex`n + 1`}</M> vectors{" "}
+              <M>{tex`\mathbf{v}_{1}, \ldots, \mathbf{v}_{n+1} \in \mathbb{R}^{n}`}</M>{" "}
+              must be linearly dependent. (The quiz above asserted this
+              for <M>{tex`n = 2`}</M>; now prove it for every <M>n</M>.)
+            </p>
+            <p>
+              <strong>(b)</strong> Conclude: the number of vectors in
+              any basis of <M>{tex`\mathbb{R}^{n}`}</M> is exactly{" "}
+              <M>n</M> — i.e. dimension is{" "}
+              <em>well-defined</em> and doesn&apos;t depend on which
+              basis you happen to choose.
+            </p>
+            <p>
+              <strong>(c)</strong> A transformer&apos;s residual stream
+              has dimension{" "}
+              <M>{tex`d \approx 10^{3}`}</M> to{" "}
+              <M>{tex`10^{4}`}</M>. Use (b) to give an immediate upper
+              bound on the number of features that can be encoded as{" "}
+              <em>strictly</em> linearly independent directions. (The
+              capstone will explain how transformers exceed this bound
+              by allowing &ldquo;almost&rdquo; independent — i.e.,
+              superposition.)
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a), do strong induction on <M>n</M>. Use the columns of
+            the <M>{tex`n \times (n+1)`}</M> matrix{" "}
+            <M>{tex`V = [\mathbf{v}_{1} \mid \ldots \mid \mathbf{v}_{n+1}]`}</M>
+            . If some <M>{tex`\mathbf{v}_{i}`}</M> has a zero in its
+            first coordinate, drop it. Otherwise scale and subtract to
+            zero out the first coordinates of all but one and reduce to
+            an <M>{tex`(n-1)`}</M>-dim problem with <M>n</M> vectors.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> Induct on <M>n</M>. Base case{" "}
+              <M>{tex`n = 1`}</M>: any two vectors in{" "}
+              <M>{tex`\mathbb{R}^{1}`}</M> are scalars, and any two
+              real numbers <M>{tex`a, b`}</M> satisfy{" "}
+              <M>{tex`b\, a - a\, b = 0`}</M> — a non-trivial linear
+              relation.
+            </p>
+            <p>
+              Inductive step. Suppose the theorem holds for{" "}
+              <M>{tex`n - 1`}</M>. Given{" "}
+              <M>{tex`\mathbf{v}_{1}, \ldots, \mathbf{v}_{n+1} \in \mathbb{R}^{n}`}</M>,
+              look at their first coordinates{" "}
+              <M>{tex`v_{1, 1}, \ldots, v_{1, n+1}`}</M>.
+            </p>
+            <p>
+              <em>Case 1.</em> They&apos;re all zero. Then every{" "}
+              <M>{tex`\mathbf{v}_{i}`}</M> lies in the{" "}
+              <M>{tex`(n-1)`}</M>-dim subspace{" "}
+              <M>{tex`\{\mathbf{x} : x_{1} = 0\} \cong \mathbb{R}^{n-1}`}</M>,
+              and we have <M>{tex`n + 1 > n`}</M> vectors there, hence{" "}
+              <M>{tex`n + 1 > (n - 1) + 1`}</M>, so by the IH applied
+              with the more vectors, they&apos;re dependent. (More
+              cleanly: <M>{tex`n + 1`}</M> vectors in a space of
+              dimension <M>{tex`n - 1`}</M> is more than{" "}
+              <M>{tex`(n - 1) + 1 = n`}</M> vectors, so the IH gives
+              dependence.)
+            </p>
+            <p>
+              <em>Case 2.</em> Some <M>{tex`v_{1, j} \neq 0`}</M>. WLOG{" "}
+              <M>{tex`j = 1`}</M>. For each{" "}
+              <M>{tex`i = 2, \ldots, n + 1`}</M> form
+            </p>
+            <Block>{tex`\mathbf{v}_{i}' = \mathbf{v}_{i} - \frac{v_{1, i}}{v_{1, 1}}\, \mathbf{v}_{1}.`}</Block>
+            <p>
+              These <M>n</M> new vectors all have first coordinate 0,
+              so they live in <M>{tex`\mathbb{R}^{n-1}`}</M>. By the
+              inductive hypothesis they are dependent: there exist
+              scalars{" "}
+              <M>{tex`c_{2}, \ldots, c_{n+1}`}</M>, not all zero, with{" "}
+              <M>{tex`\sum_{i \geq 2} c_{i}\, \mathbf{v}_{i}' = \mathbf{0}`}</M>.
+              Substituting back gives a non-trivial relation among{" "}
+              <M>{tex`\mathbf{v}_{1}, \ldots, \mathbf{v}_{n+1}`}</M>{" "}
+              (the coefficient on <M>{tex`\mathbf{v}_{1}`}</M> is
+              determined, the rest are the <M>{tex`c_{i}`}</M>, not all
+              zero). Done.
+            </p>
+            <p>
+              <strong>(b)</strong> Suppose{" "}
+              <M>{tex`\{\mathbf{b}_{1}, \ldots, \mathbf{b}_{m}\}`}</M>{" "}
+              and{" "}
+              <M>{tex`\{\mathbf{c}_{1}, \ldots, \mathbf{c}_{k}\}`}</M>{" "}
+              are both bases of{" "}
+              <M>{tex`\mathbb{R}^{n}`}</M>. Both sets are linearly
+              independent. By (a) (and the symmetric argument inside{" "}
+              <M>{tex`\mathbb{R}^{n}`}</M>) we get{" "}
+              <M>{tex`m \leq n`}</M> and <M>{tex`k \leq n`}</M>; and
+              both sets span, so by another application of (a){" "}
+              <M>{tex`m \geq n`}</M> and <M>{tex`k \geq n`}</M>. Hence{" "}
+              <M>{tex`m = k = n`}</M>.
+            </p>
+            <p>
+              <strong>(c)</strong> At most <M>d</M> features can be
+              encoded as strictly linearly independent directions in a{" "}
+              <M>d</M>-dimensional residual stream. The number of
+              concepts a model represents is empirically much larger
+              than <M>d</M> — that&apos;s what forces almost-orthogonal
+              encodings, which the capstone makes precise.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -84,6 +85,107 @@ export default function MatMulPage() {
           { id: "b", label: "Because A is bigger.", explain: "Size has nothing to do with order of operations." },
           { id: "c", label: "Convention only — both orders give the same result.", explain: "They give the same result only when A and B commute, which is rare." },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>The trace and an impossibility theorem.</strong>
+            </p>
+            <p>
+              The <strong>trace</strong> of a square matrix is the sum
+              of its diagonal entries:{" "}
+              <M>{tex`\mathrm{tr}(A) = \sum_{i} A_{ii}`}</M>.
+            </p>
+            <p>
+              <strong>(a)</strong> Prove the cyclic property: for any
+              two <M>{tex`n \times n`}</M> matrices <M>A</M> and{" "}
+              <M>B</M>,
+            </p>
+            <Block>{tex`\mathrm{tr}(AB) = \mathrm{tr}(BA).`}</Block>
+            <p>
+              <strong>(b)</strong> Conclude that there is no pair of{" "}
+              <M>{tex`n \times n`}</M> real matrices <M>A</M> and{" "}
+              <M>B</M> satisfying the &ldquo;canonical commutation
+              relation&rdquo;
+            </p>
+            <Block>{tex`AB - BA = I.`}</Block>
+            <p>
+              (Quantum mechanics&apos; position–momentum relation{" "}
+              <M>{tex`[\hat{x}, \hat{p}] = i\hbar`}</M>{" "}
+              <em>cannot</em> be modelled by finite matrices — that is
+              why it forces an infinite-dimensional Hilbert space.)
+            </p>
+            <p>
+              <strong>(c)</strong> Now flip it: produce two <em>specific
+              non-commuting</em> 2×2 matrices whose commutator{" "}
+              <M>{tex`AB - BA`}</M> is non-zero (it just can&apos;t be{" "}
+              <M>I</M>). Compute the commutator explicitly.
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a), expand both sides into double sums and swap the
+            indices of summation. For (b), take the trace of both sides
+            of the relation. For (c), try{" "}
+            <M>{tex`A = \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}`}</M>{" "}
+            and{" "}
+            <M>{tex`B = \begin{pmatrix} 0 & 0 \\ 1 & 0 \end{pmatrix}`}</M>.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong>{" "}
+              <M>{tex`(AB)_{ii} = \sum_{k} A_{ik} B_{ki}`}</M>, so
+            </p>
+            <Block>{tex`\mathrm{tr}(AB) = \sum_{i} \sum_{k} A_{ik} B_{ki} = \sum_{k} \sum_{i} B_{ki} A_{ik} = \sum_{k} (BA)_{kk} = \mathrm{tr}(BA).`}</Block>
+            <p>
+              The proof is just commuting two scalar multiplications and
+              re-ordering the summations.
+            </p>
+            <p>
+              <strong>(b)</strong> If{" "}
+              <M>{tex`AB - BA = I`}</M>, take traces of both sides:
+            </p>
+            <Block>{tex`\mathrm{tr}(AB) - \mathrm{tr}(BA) = \mathrm{tr}(I) = n.`}</Block>
+            <p>
+              The left side is 0 by (a). So <M>{tex`0 = n`}</M>, a
+              contradiction for any{" "}
+              <M>{tex`n \geq 1`}</M>. No finite-dimensional solution
+              exists.
+            </p>
+            <p>
+              <strong>(c)</strong> With the suggested <M>A</M> and{" "}
+              <M>B</M>:
+            </p>
+            <Block>{tex`AB = \begin{bmatrix} 1 & 0 \\ 0 & 0 \end{bmatrix}, \quad BA = \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}, \quad AB - BA = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}.`}</Block>
+            <p>
+              That commutator is non-zero (matrices don&apos;t commute)
+              and traceless (consistent with (a)). It also happens to be
+              the Pauli{" "}
+              <M>{tex`\sigma_{z}`}</M>, which is a coincidence of toy
+              size, not of substance.
+            </p>
+            <p>
+              <strong>Why this matters in mech interp.</strong>{" "}
+              Attention scores are inner products{" "}
+              <M>{tex`q^{\top} k`}</M>; QK and OV circuits are products
+              of weight matrices. Whenever you reorder a product to
+              expose structure (e.g.,{" "}
+              <M>{tex`W_{Q}^{\top} W_{K}`}</M> or rewriting{" "}
+              <M>{tex`W_{O} W_{V}`}</M> as a single low-rank operator),
+              you are using exactly the algebraic facts that the trace
+              identity is a small case of. The trace itself becomes a
+              recurring tool: <em>activation patching contributions</em>,{" "}
+              <em>logit attribution</em>, and{" "}
+              <em>Frobenius-norm regularisers</em> are all traces in
+              disguise.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

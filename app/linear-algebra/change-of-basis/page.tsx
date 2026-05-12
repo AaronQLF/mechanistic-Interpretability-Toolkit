@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -96,6 +97,114 @@ export default function ChangeOfBasisPage() {
             explain: "That doubles instead of halves. The mapping is v / 2 in each coordinate.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>Similar matrices, and what survives a change of
+              basis.</strong>
+            </p>
+            <p>
+              Let <M>T</M> be a linear map{" "}
+              <M>{tex`\mathbb{R}^{n} \to \mathbb{R}^{n}`}</M>. In the
+              standard basis it has matrix <M>A</M>. In a new basis{" "}
+              <M>B</M> (with change-of-basis matrix <M>P</M> whose
+              columns are the new basis vectors expressed in the
+              standard basis) it has matrix <M>{tex`A'`}</M>.
+            </p>
+            <p>
+              <strong>(a)</strong> Show that
+            </p>
+            <Block>{tex`A' = P^{-1} A P.`}</Block>
+            <p>
+              Two matrices related this way are called{" "}
+              <strong>similar</strong>.
+            </p>
+            <p>
+              <strong>(b)</strong> Use the cyclic property of trace to
+              show that <M>A</M> and <M>{tex`A'`}</M> have the{" "}
+              <em>same trace</em>.
+            </p>
+            <p>
+              <strong>(c)</strong> Show that <M>A</M> and{" "}
+              <M>{tex`A'`}</M> have the same determinant. (You may use{" "}
+              <M>{tex`\det(XY) = \det X \det Y`}</M> and{" "}
+              <M>{tex`\det(X^{-1}) = 1/\det X`}</M>.)
+            </p>
+            <p>
+              <strong>(d)</strong> Conclude that the trace and the
+              determinant are properties of the <em>linear map</em>{" "}
+              itself — not of the matrix used to represent it. Identify
+              one fact about a linear map that is <em>not</em>{" "}
+              basis-invariant. (Hint: most matrix entries.)
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a), let <M>{tex`\mathbf{v}`}</M> have standard
+            coordinates{" "}
+            <M>{tex`[\mathbf{v}]_{E}`}</M> and B-coordinates{" "}
+            <M>{tex`[\mathbf{v}]_{B}`}</M>. The chapter showed{" "}
+            <M>{tex`[\mathbf{v}]_{E} = P\, [\mathbf{v}]_{B}`}</M>. Apply{" "}
+            <M>T</M> in both pictures and equate.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> The action of <M>T</M> in the
+              standard basis is{" "}
+              <M>{tex`[T \mathbf{v}]_{E} = A\, [\mathbf{v}]_{E}`}</M>.
+              In the new basis it&apos;s{" "}
+              <M>{tex`[T \mathbf{v}]_{B} = A'\, [\mathbf{v}]_{B}`}</M>.
+              Use{" "}
+              <M>{tex`[\mathbf{v}]_{E} = P\, [\mathbf{v}]_{B}`}</M> and{" "}
+              <M>{tex`[T \mathbf{v}]_{E} = P\, [T \mathbf{v}]_{B}`}</M>:
+            </p>
+            <Block>{tex`P\, A'\, [\mathbf{v}]_{B} = A\, P\, [\mathbf{v}]_{B}.`}</Block>
+            <p>
+              This holds for every{" "}
+              <M>{tex`[\mathbf{v}]_{B}`}</M>, so{" "}
+              <M>{tex`P A' = A P`}</M> as matrices, and left-multiplying
+              by <M>{tex`P^{-1}`}</M> gives{" "}
+              <M>{tex`A' = P^{-1} A P`}</M>.
+            </p>
+            <p>
+              <strong>(b)</strong> Using cyclicity from the matrix-mult
+              chapter,
+            </p>
+            <Block>{tex`\mathrm{tr}(A') = \mathrm{tr}(P^{-1} A P) = \mathrm{tr}(A P P^{-1}) = \mathrm{tr}(A).`}</Block>
+            <p>
+              <strong>(c)</strong>
+            </p>
+            <Block>{tex`\det(A') = \det(P^{-1}) \det(A) \det(P) = \frac{1}{\det P}\, \det A\, \det P = \det A.`}</Block>
+            <p>
+              <strong>(d)</strong> Trace and determinant only depend on
+              the linear map. The full matrix entries do{" "}
+              <em>not</em> — pick any non-diagonal{" "}
+              <M>{tex`A`}</M> and a basis whose columns are
+              eigenvectors; in that basis{" "}
+              <M>{tex`A' = P^{-1} A P`}</M> is diagonal, so most
+              entries are zero. The off-diagonal entries are
+              basis-dependent; the trace and determinant aren&apos;t.
+            </p>
+            <p>
+              <strong>Why this matters.</strong> When transformer
+              papers talk about &ldquo;the OV circuit&rdquo;{" "}
+              <M>{tex`W_{O} W_{V}`}</M> they often write it in different
+              bases — sometimes the standard residual basis, sometimes
+              the eigenbasis of the unembedding, sometimes the SAE
+              feature basis. Trace and determinant are stable under all
+              of those rewrites; entry-by-entry interpretations are not.
+              Properties that survive change of basis (trace,
+              determinant, rank, eigenvalues, singular values) are
+              precisely the ones worth quoting in mech-interp results.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

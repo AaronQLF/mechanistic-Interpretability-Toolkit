@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -119,6 +120,133 @@ export default function DetRankPage() {
             explain: "Recompute: 2·2 − 4·1 = 4 − 4 = 0.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>The rank–nullity theorem.</strong>
+            </p>
+            <p>
+              For an <M>{tex`m \times n`}</M> matrix <M>A</M>, define
+            </p>
+            <ul>
+              <li>
+                the <strong>image</strong>{" "}
+                <M>{tex`\mathrm{im}(A) = \{A \mathbf{x} : \mathbf{x} \in \mathbb{R}^{n}\} \subseteq \mathbb{R}^{m}`}</M>{" "}
+                (a.k.a. the column space),
+              </li>
+              <li>
+                the <strong>kernel</strong>{" "}
+                <M>{tex`\ker(A) = \{\mathbf{x} \in \mathbb{R}^{n} : A \mathbf{x} = \mathbf{0}\}`}</M>{" "}
+                (a.k.a. the null space),
+              </li>
+              <li>
+                <strong>rank</strong>{" "}
+                <M>{tex`r = \dim \mathrm{im}(A)`}</M> and{" "}
+                <strong>nullity</strong>{" "}
+                <M>{tex`\nu = \dim \ker(A)`}</M>.
+              </li>
+            </ul>
+            <p>
+              <strong>(a)</strong> Prove
+            </p>
+            <Block>{tex`r + \nu = n.`}</Block>
+            <p>
+              <strong>(b)</strong> Conclude that for an attention-head
+              factor like{" "}
+              <M>{tex`W_{O} W_{V} \in \mathbb{R}^{d \times d}`}</M>{" "}
+              with inner dimension <M>{tex`d_{\text{head}} \ll d`}</M>,
+              the kernel has dimension at least{" "}
+              <M>{tex`d - d_{\text{head}}`}</M>. What does that mean
+              about how much of the residual stream the head can{" "}
+              <em>see</em>?
+            </p>
+            <p>
+              <strong>(c)</strong> Give an{" "}
+              <M>{tex`m \times n`}</M> matrix with prescribed{" "}
+              <M>{tex`m, n, r`}</M> (with{" "}
+              <M>{tex`r \leq \min(m, n)`}</M>) by exhibiting one in
+              block form, and verify (a) on it.
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a), pick a basis{" "}
+            <M>{tex`\mathbf{u}_{1}, \ldots, \mathbf{u}_{\nu}`}</M> of{" "}
+            <M>{tex`\ker(A)`}</M>, extend it to a basis{" "}
+            <M>{tex`\mathbf{u}_{1}, \ldots, \mathbf{u}_{\nu}, \mathbf{w}_{1}, \ldots, \mathbf{w}_{k}`}</M>{" "}
+            of <M>{tex`\mathbb{R}^{n}`}</M>, and prove the images{" "}
+            <M>{tex`A \mathbf{w}_{j}`}</M> are a basis of{" "}
+            <M>{tex`\mathrm{im}(A)`}</M>. So{" "}
+            <M>{tex`r = k = n - \nu`}</M>.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> Let{" "}
+              <M>{tex`\{\mathbf{u}_{1}, \ldots, \mathbf{u}_{\nu}\}`}</M>{" "}
+              be a basis of <M>{tex`\ker(A)`}</M>; extend it to a basis{" "}
+              <M>{tex`\{\mathbf{u}_{1}, \ldots, \mathbf{u}_{\nu}, \mathbf{w}_{1}, \ldots, \mathbf{w}_{k}\}`}</M>{" "}
+              of all of <M>{tex`\mathbb{R}^{n}`}</M>, so{" "}
+              <M>{tex`\nu + k = n`}</M>. We claim{" "}
+              <M>{tex`\{A \mathbf{w}_{1}, \ldots, A \mathbf{w}_{k}\}`}</M>{" "}
+              is a basis of <M>{tex`\mathrm{im}(A)`}</M>.
+            </p>
+            <p>
+              <em>Spanning.</em> Any{" "}
+              <M>{tex`A \mathbf{x} \in \mathrm{im}(A)`}</M> with{" "}
+              <M>{tex`\mathbf{x} = \sum a_i \mathbf{u}_i + \sum b_j \mathbf{w}_j`}</M>{" "}
+              satisfies{" "}
+              <M>{tex`A\mathbf{x} = \sum b_j A\mathbf{w}_j`}</M> since{" "}
+              <M>{tex`A \mathbf{u}_{i} = \mathbf{0}`}</M>.
+            </p>
+            <p>
+              <em>Independence.</em> Suppose{" "}
+              <M>{tex`\sum c_j A\mathbf{w}_j = \mathbf{0}`}</M>. Then{" "}
+              <M>{tex`A\bigl(\sum c_j \mathbf{w}_j\bigr) = \mathbf{0}`}</M>,
+              so{" "}
+              <M>{tex`\sum c_j \mathbf{w}_j \in \ker(A)`}</M>. Express
+              that as a combination of the{" "}
+              <M>{tex`\mathbf{u}_i`}</M> — but the{" "}
+              <M>{tex`\mathbf{u}_i, \mathbf{w}_j`}</M> are independent
+              by construction, so all the <M>{tex`c_j`}</M> must be
+              zero.
+            </p>
+            <p>
+              Hence{" "}
+              <M>{tex`r = \dim \mathrm{im}(A) = k = n - \nu`}</M>.
+            </p>
+            <p>
+              <strong>(b)</strong>{" "}
+              <M>{tex`W_{V} : \mathbb{R}^{d} \to \mathbb{R}^{d_{\text{head}}}`}</M>{" "}
+              has rank at most{" "}
+              <M>{tex`d_{\text{head}}`}</M>, so{" "}
+              <M>{tex`W_{O} W_{V}`}</M> does too. By (a), its kernel
+              has dimension at least{" "}
+              <M>{tex`d - d_{\text{head}}`}</M>. Concretely: there is a
+              subspace of the residual stream of dimension at least{" "}
+              <M>{tex`d - d_{\text{head}}`}</M> that the head{" "}
+              <em>cannot read</em> — it&apos;s blind to that subspace.
+              That blindness is the precise content of &ldquo;low-rank
+              attention&rdquo;.
+            </p>
+            <p>
+              <strong>(c)</strong> The block matrix
+            </p>
+            <Block>{tex`A = \begin{bmatrix} I_{r} & 0 \\ 0 & 0 \end{bmatrix} \in \mathbb{R}^{m \times n}`}</Block>
+            <p>
+              has rank exactly <M>r</M>. Its kernel is{" "}
+              <M>{tex`\{0\}^{r} \times \mathbb{R}^{n-r}`}</M> with
+              dimension{" "}
+              <M>{tex`n - r`}</M>. So{" "}
+              <M>{tex`r + (n - r) = n`}</M> ✓.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

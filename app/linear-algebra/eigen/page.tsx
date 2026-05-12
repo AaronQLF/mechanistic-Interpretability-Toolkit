@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -111,6 +112,137 @@ export default function EigenPage() {
               "Real eigenvalues fail when the matrix rotates without an axis. Diagonal matrices always have real eigenvalues.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>The spectral theorem (and a defective
+              counter-example).</strong>
+            </p>
+            <p>
+              <strong>(a) Spectral theorem.</strong> Let <M>A</M> be a
+              real <M>{tex`n \times n`}</M> <em>symmetric</em> matrix
+              (<M>{tex`A^{\top} = A`}</M>). Show that:
+            </p>
+            <ol>
+              <li>Every eigenvalue of <M>A</M> is real.</li>
+              <li>
+                Eigenvectors corresponding to <em>distinct</em>{" "}
+                eigenvalues are orthogonal.
+              </li>
+            </ol>
+            <p>
+              (You need only handle real, symmetric{" "}
+              <M>{tex`2 \times 2`}</M> for the algebra to be clean —
+              the same argument generalises.)
+            </p>
+            <p>
+              <strong>(b) A defective matrix.</strong> Consider
+            </p>
+            <Block>{tex`J = \begin{bmatrix} 2 & 1 \\ 0 & 2 \end{bmatrix}.`}</Block>
+            <p>
+              Find all real eigenvalues and all eigenvectors. Show that{" "}
+              <M>J</M> has only{" "}
+              <em>one</em> linearly independent eigenvector even though
+              its characteristic polynomial has 2 as a double root.
+              Conclude that <M>J</M> is{" "}
+              <strong>not</strong> diagonalisable.
+            </p>
+            <p>
+              <strong>(c)</strong> Combine: explain in one or two
+              sentences why activation-covariance matrices
+              (<M>{tex`X^{\top} X`}</M> for an activation matrix{" "}
+              <M>X</M>), which are symmetric, can <em>always</em> be
+              diagonalised — and why this is the algebraic
+              justification for &ldquo;principal component
+              analysis&rdquo; on residual streams.
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a)-(2), let{" "}
+            <M>{tex`A \mathbf{v} = \lambda \mathbf{v}`}</M> and{" "}
+            <M>{tex`A \mathbf{w} = \mu \mathbf{w}`}</M> with{" "}
+            <M>{tex`\lambda \neq \mu`}</M>. Compute{" "}
+            <M>{tex`\mathbf{w}^{\top} A \mathbf{v}`}</M> two ways. For
+            (b), set up{" "}
+            <M>{tex`(J - \lambda I)\mathbf{v} = \mathbf{0}`}</M> and
+            actually solve it.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a) Reality of eigenvalues.</strong> Suppose{" "}
+              <M>{tex`A \mathbf{v} = \lambda \mathbf{v}`}</M> over{" "}
+              <M>{tex`\mathbb{C}`}</M> with{" "}
+              <M>{tex`\mathbf{v} \neq \mathbf{0}`}</M>. Take the
+              conjugate-transpose:{" "}
+              <M>{tex`\mathbf{v}^{*} A^{\top} = \bar\lambda \mathbf{v}^{*}`}</M>.
+              Since <M>{tex`A^{\top} = A`}</M> with real entries,
+            </p>
+            <Block>{tex`\mathbf{v}^{*} A \mathbf{v} = \lambda\, \mathbf{v}^{*} \mathbf{v} \quad \text{and} \quad \mathbf{v}^{*} A \mathbf{v} = \overline{\lambda}\, \mathbf{v}^{*} \mathbf{v}.`}</Block>
+            <p>
+              <M>{tex`\mathbf{v}^{*} \mathbf{v} > 0`}</M>, so{" "}
+              <M>{tex`\lambda = \overline{\lambda}`}</M>, i.e.{" "}
+              <M>{tex`\lambda \in \mathbb{R}`}</M>.
+            </p>
+            <p>
+              <strong>Orthogonality for distinct eigenvalues.</strong>{" "}
+              Let{" "}
+              <M>{tex`A \mathbf{v} = \lambda \mathbf{v}`}</M>,{" "}
+              <M>{tex`A \mathbf{w} = \mu \mathbf{w}`}</M> with{" "}
+              <M>{tex`\lambda \neq \mu`}</M>. Compute{" "}
+              <M>{tex`\mathbf{w}^{\top} A \mathbf{v}`}</M> two ways:
+            </p>
+            <Block>{tex`\mathbf{w}^{\top} A \mathbf{v} = \mathbf{w}^{\top}(\lambda \mathbf{v}) = \lambda\, \mathbf{w}^{\top} \mathbf{v}.`}</Block>
+            <Block>{tex`\mathbf{w}^{\top} A \mathbf{v} = (A^{\top} \mathbf{w})^{\top} \mathbf{v} = (A \mathbf{w})^{\top} \mathbf{v} = \mu\, \mathbf{w}^{\top} \mathbf{v}.`}</Block>
+            <p>
+              Subtracting:{" "}
+              <M>{tex`(\lambda - \mu)\, \mathbf{w}^{\top} \mathbf{v} = 0`}</M>.
+              Since{" "}
+              <M>{tex`\lambda \neq \mu`}</M>,{" "}
+              <M>{tex`\mathbf{w}^{\top} \mathbf{v} = 0`}</M> —
+              orthogonal.
+            </p>
+            <p>
+              <strong>(b)</strong> The characteristic polynomial of{" "}
+              <M>J</M> is{" "}
+              <M>{tex`\det(J - \lambda I) = (2 - \lambda)^{2}`}</M>, so{" "}
+              <M>{tex`\lambda = 2`}</M> with algebraic multiplicity 2.
+              Find eigenvectors:
+            </p>
+            <Block>{tex`(J - 2 I)\mathbf{v} = \begin{bmatrix} 0 & 1 \\ 0 & 0 \end{bmatrix} \begin{bmatrix} v_{1} \\ v_{2} \end{bmatrix} = \begin{bmatrix} v_{2} \\ 0 \end{bmatrix} = \mathbf{0} \;\Longrightarrow\; v_{2} = 0.`}</Block>
+            <p>
+              The eigenspace is 1-dimensional, spanned by{" "}
+              <M>{tex`(1, 0)`}</M>. So <M>J</M> has algebraic
+              multiplicity 2 but geometric multiplicity 1 — it&apos;s{" "}
+              <em>defective</em>. There is no basis of{" "}
+              <M>{tex`\mathbb{R}^{2}`}</M> made of <M>J</M>&apos;s
+              eigenvectors, hence no diagonal{" "}
+              <M>{tex`P^{-1} J P`}</M>.
+            </p>
+            <p>
+              <strong>(c)</strong>{" "}
+              <M>{tex`X^{\top} X`}</M> is symmetric and positive
+              semi-definite. By (a), its eigenvalues are real (and{" "}
+              <M>{tex`\geq 0`}</M>) and the eigenvectors corresponding
+              to distinct eigenvalues are orthogonal. With a small
+              extra argument (eigenvectors within a single eigenspace
+              can be chosen orthogonal by Gram–Schmidt), we get an
+              orthonormal eigenbasis of all of{" "}
+              <M>{tex`\mathbb{R}^{n}`}</M>. PCA on activations{" "}
+              <em>is</em> diagonalising <M>{tex`X^{\top} X`}</M>: the
+              eigenvectors are the principal directions, the
+              eigenvalues are the variances along them. Activations are
+              never &ldquo;defective&rdquo; in this sense — the
+              symmetry guarantees the decomposition exists.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

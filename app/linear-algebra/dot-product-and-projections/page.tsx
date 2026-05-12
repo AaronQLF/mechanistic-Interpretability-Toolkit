@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -143,6 +144,137 @@ export default function DotProductPage() {
               "Parallel vectors give v·w = ±‖v‖‖w‖ — the maximum magnitude, not zero.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>Gram–Schmidt: turn any basis into an orthonormal
+              basis.</strong>
+            </p>
+            <p>
+              Let{" "}
+              <M>{tex`\mathbf{a}_{1}, \mathbf{a}_{2}, \ldots, \mathbf{a}_{k}`}</M>{" "}
+              be a linearly independent list in{" "}
+              <M>{tex`\mathbb{R}^{n}`}</M>. Define recursively:
+            </p>
+            <Block>{tex`\mathbf{u}_{i} = \mathbf{a}_{i} - \sum_{j < i} \frac{\mathbf{a}_{i} \cdot \mathbf{q}_{j}}{\mathbf{q}_{j} \cdot \mathbf{q}_{j}}\, \mathbf{q}_{j}, \qquad \mathbf{q}_{i} = \frac{\mathbf{u}_{i}}{\|\mathbf{u}_{i}\|}.`}</Block>
+            <p>
+              That is: take{" "}
+              <M>{tex`\mathbf{a}_{i}`}</M>, subtract its projection onto
+              every previous{" "}
+              <M>{tex`\mathbf{q}_{j}`}</M>, then normalise.
+            </p>
+            <p>
+              <strong>(a)</strong> Show that{" "}
+              <M>{tex`\mathbf{u}_{i} \neq \mathbf{0}`}</M> for every{" "}
+              <M>i</M> (so the normalisation step is well-defined).
+            </p>
+            <p>
+              <strong>(b)</strong> Show that{" "}
+              <M>{tex`\mathbf{q}_{i} \cdot \mathbf{q}_{j} = \delta_{ij}`}</M>{" "}
+              (the result is orthonormal).
+            </p>
+            <p>
+              <strong>(c)</strong> Show that for every <M>{tex`i`}</M>,
+            </p>
+            <Block>{tex`\mathrm{span}\{\mathbf{q}_{1}, \ldots, \mathbf{q}_{i}\} = \mathrm{span}\{\mathbf{a}_{1}, \ldots, \mathbf{a}_{i}\}.`}</Block>
+            <p>
+              <strong>(d)</strong> Use the procedure to factor any{" "}
+              <M>{tex`m \times k`}</M> matrix <M>A</M> with linearly
+              independent columns into <M>{tex`A = QR`}</M>, where{" "}
+              <M>{tex`Q \in \mathbb{R}^{m \times k}`}</M> has
+              orthonormal columns and{" "}
+              <M>{tex`R \in \mathbb{R}^{k \times k}`}</M> is upper
+              triangular with positive diagonal. (This is the QR
+              decomposition.)
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a), if{" "}
+            <M>{tex`\mathbf{u}_{i} = \mathbf{0}`}</M> then{" "}
+            <M>{tex`\mathbf{a}_{i}`}</M> would be a combination of the
+            earlier{" "}
+            <M>{tex`\mathbf{q}_{j}`}</M>, hence (by (c)) of the earlier{" "}
+            <M>{tex`\mathbf{a}_{j}`}</M> — contradicting independence.
+            For (b), induct on <M>i</M>: by construction{" "}
+            <M>{tex`\mathbf{u}_{i}`}</M> is orthogonal to every{" "}
+            <M>{tex`\mathbf{q}_{j}`}</M> with <M>{tex`j < i`}</M>.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a) and (c) by simultaneous induction.</strong>{" "}
+              Base case <M>{tex`i = 1`}</M>:{" "}
+              <M>{tex`\mathbf{u}_{1} = \mathbf{a}_{1} \neq \mathbf{0}`}</M>{" "}
+              by independence, and{" "}
+              <M>{tex`\mathrm{span}\{\mathbf{q}_{1}\} = \mathrm{span}\{\mathbf{a}_{1}\}`}</M>{" "}
+              since the two are positive multiples of one another.
+            </p>
+            <p>
+              Inductive step. Assume both hold up to index{" "}
+              <M>{tex`i - 1`}</M>. The vector{" "}
+              <M>{tex`\sum_{j < i} \tfrac{\mathbf{a}_{i} \cdot \mathbf{q}_{j}}{\mathbf{q}_{j} \cdot \mathbf{q}_{j}} \mathbf{q}_{j}`}</M>{" "}
+              lies in{" "}
+              <M>{tex`\mathrm{span}\{\mathbf{q}_{1}, \ldots, \mathbf{q}_{i-1}\} = \mathrm{span}\{\mathbf{a}_{1}, \ldots, \mathbf{a}_{i-1}\}`}</M>.
+              If{" "}
+              <M>{tex`\mathbf{u}_{i} = \mathbf{0}`}</M> we&apos;d have{" "}
+              <M>{tex`\mathbf{a}_{i}`}</M> in that span — contradicting
+              independence. So{" "}
+              <M>{tex`\mathbf{u}_{i} \neq \mathbf{0}`}</M>, and{" "}
+              <M>{tex`\mathbf{q}_{i}`}</M> is well-defined. Also{" "}
+              <M>{tex`\mathbf{q}_{i} \in \mathrm{span}\{\mathbf{a}_{1}, \ldots, \mathbf{a}_{i}\}`}</M>{" "}
+              and conversely{" "}
+              <M>{tex`\mathbf{a}_{i} \in \mathrm{span}\{\mathbf{q}_{1}, \ldots, \mathbf{q}_{i}\}`}</M>,
+              so the spans match.
+            </p>
+            <p>
+              <strong>(b)</strong> By construction, for{" "}
+              <M>{tex`j < i`}</M>:
+            </p>
+            <Block>{tex`\mathbf{u}_{i} \cdot \mathbf{q}_{j} = \mathbf{a}_{i} \cdot \mathbf{q}_{j} - \sum_{\ell < i} \frac{\mathbf{a}_{i} \cdot \mathbf{q}_{\ell}}{\mathbf{q}_{\ell} \cdot \mathbf{q}_{\ell}}\,\mathbf{q}_{\ell} \cdot \mathbf{q}_{j}.`}</Block>
+            <p>
+              By the inductive hypothesis the{" "}
+              <M>{tex`\mathbf{q}_{\ell}`}</M> are orthonormal, so{" "}
+              <M>{tex`\mathbf{q}_{\ell} \cdot \mathbf{q}_{j} = \delta_{\ell j}`}</M>,
+              and the only surviving term is{" "}
+              <M>{tex`\mathbf{a}_{i} \cdot \mathbf{q}_{j} - \mathbf{a}_{i} \cdot \mathbf{q}_{j} = 0`}</M>.
+              Dividing by{" "}
+              <M>{tex`\|\mathbf{u}_{i}\|`}</M> gives{" "}
+              <M>{tex`\mathbf{q}_{i} \cdot \mathbf{q}_{j} = 0`}</M>; and{" "}
+              <M>{tex`\mathbf{q}_{i} \cdot \mathbf{q}_{i} = 1`}</M> by
+              normalisation.
+            </p>
+            <p>
+              <strong>(d)</strong> The recursion can be rearranged to
+              express each{" "}
+              <M>{tex`\mathbf{a}_{i}`}</M> as
+            </p>
+            <Block>{tex`\mathbf{a}_{i} = \sum_{j \leq i} R_{ji}\, \mathbf{q}_{j},`}</Block>
+            <p>
+              where{" "}
+              <M>{tex`R_{ji} = \mathbf{a}_{i} \cdot \mathbf{q}_{j}`}</M>{" "}
+              for <M>{tex`j < i`}</M> and{" "}
+              <M>{tex`R_{ii} = \|\mathbf{u}_{i}\| > 0`}</M>. Stacking
+              the columns gives <M>{tex`A = QR`}</M> with <M>R</M>{" "}
+              upper-triangular and positive on the diagonal.
+            </p>
+            <p>
+              <strong>Why this matters.</strong> QR is how every
+              well-implemented least-squares solver works (numerically
+              stable, no need to form{" "}
+              <M>{tex`A^{\top} A`}</M>); it underlies orthogonalising
+              attention heads, building orthonormal feature directions
+              for probes, and the orthogonal initialisation schemes
+              transformers train better with. Gram–Schmidt is the
+              algorithm; QR is the matrix statement.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );
