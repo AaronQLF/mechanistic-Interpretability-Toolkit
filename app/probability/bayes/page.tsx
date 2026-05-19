@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -134,6 +135,156 @@ export default function BayesPage() {
               "That's the prior — Bayes updates it upward when the evidence is informative.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>(a) Sequential Bayes.</strong> Suppose
+              evidence comes in pieces{" "}
+              <M>{tex`x_{1}, x_{2}, \ldots, x_{n}`}</M> that are{" "}
+              <em>conditionally independent given the
+              hypothesis</em>{" "}
+              <M>H</M>:{" "}
+              <M>{tex`p(x_{1}, \ldots, x_{n} \mid H) = \prod_{i} p(x_{i} \mid H)`}</M>.
+              Show that updating one piece at a time and updating
+              all at once yield the same posterior:
+              <Block>{tex`p(H \mid x_{1}, \ldots, x_{n}) \propto p(H) \prod_{i=1}^{n} p(x_{i} \mid H).`}</Block>
+              Derive an equivalent form using <em>log-odds</em>{" "}
+              <M>{tex`\ell(H) = \log\frac{p(H)}{1-p(H)}`}</M> for a
+              binary hypothesis: each piece of evidence{" "}
+              <em>adds</em> a term to the log-odds. (This is the
+              elementary Bayesian argument behind logistic
+              regression.)
+            </p>
+            <p>
+              <strong>(b) Two tests.</strong> A disease has prior
+              prevalence{" "}
+              <M>{tex`\pi = 0.01`}</M>. Test A has sensitivity{" "}
+              <M>{tex`\alpha = 0.99`}</M> and specificity{" "}
+              <M>{tex`\beta = 0.95`}</M>. Test B (different
+              technology, conditionally independent given true
+              status) has the same sensitivity and specificity. A
+              patient tests positive on both. What is the posterior
+              probability of disease? Compare to the single-test
+              posterior of <M>{tex`\approx 0.17`}</M>; explain why
+              the second positive moves you so much further.
+            </p>
+            <p>
+              <strong>(c) Activation patching as Bayes.</strong>{" "}
+              Frame an activation-patching experiment in Bayesian
+              language. Let <M>H</M> be the hypothesis &ldquo;head{" "}
+              <M>h</M> at layer <M>{tex`\ell`}</M> is causally
+              responsible for the model&apos;s correct answer on
+              prompt <M>P</M>.&rdquo; Let <M>x</M> be the
+              experimental observation that the logit difference
+              drops by amount <M>{tex`\Delta`}</M> when you ablate
+              that head. Write a likelihood ratio{" "}
+              <M>{tex`p(x \mid H)/p(x \mid \neg H)`}</M> in qualitative
+              form, and explain what would constitute a strong vs.&nbsp;weak
+              piece of evidence for <M>H</M>. Where in this picture
+              does the multiple-comparisons / publication-bias
+              problem live?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a): apply Bayes&apos; rule once to the joint
+            evidence, then once per piece, and compare. For
+            log-odds: take logs and use{" "}
+            <M>{tex`p(x|H)/p(x|\neg H)`}</M> as the per-evidence
+            additive term. For (b): apply two independent likelihood
+            ratios to the prior odds.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> By Bayes,{" "}
+              <M>{tex`p(H \mid \mathbf{x}) \propto p(\mathbf{x} \mid H) p(H)`}</M>.
+              Conditional independence factors{" "}
+              <M>{tex`p(\mathbf{x} \mid H)`}</M> as{" "}
+              <M>{tex`\prod_{i} p(x_{i} \mid H)`}</M>, giving the
+              stated form. Update one piece at a time: starting from{" "}
+              <M>{tex`p(H)`}</M>, the first piece gives{" "}
+              <M>{tex`p(H \mid x_{1}) \propto p(x_{1} \mid H) p(H)`}</M>,
+              the second gives{" "}
+              <M>{tex`p(H \mid x_{1}, x_{2}) \propto p(x_{2} \mid H, x_{1}) p(H \mid x_{1}) = p(x_{2} \mid H) p(x_{1} \mid H) p(H)`}</M>{" "}
+              (using conditional independence{" "}
+              <M>{tex`p(x_{2} \mid H, x_{1}) = p(x_{2} \mid H)`}</M>),
+              and so on. Same answer.
+            </p>
+            <p>
+              For binary <M>H</M>: divide by{" "}
+              <M>{tex`p(\neg H \mid \mathbf{x})`}</M>:
+              <Block>{tex`\frac{p(H \mid \mathbf{x})}{p(\neg H \mid \mathbf{x})} = \frac{p(H)}{p(\neg H)} \cdot \prod_{i} \frac{p(x_{i} \mid H)}{p(x_{i} \mid \neg H)}.`}</Block>
+              Take logs:
+              <Block>{tex`\ell(H \mid \mathbf{x}) = \ell(H) + \sum_{i} \log \frac{p(x_{i} \mid H)}{p(x_{i} \mid \neg H)}.`}</Block>
+              Each piece of evidence shifts the log-odds by an
+              additive likelihood-ratio term. This is the bedrock of
+              log-linear classifiers.
+            </p>
+            <p>
+              <strong>(b)</strong> Each positive test contributes a
+              likelihood ratio of{" "}
+              <M>{tex`\alpha/(1-\beta) = 0.99/0.05 = 19.8`}</M>.
+              Prior odds are{" "}
+              <M>{tex`0.01/0.99 \approx 0.0101`}</M>. After two
+              independent positive tests,
+              <Block>{tex`\text{posterior odds} = 0.0101 \times 19.8^{2} \approx 3.96.`}</Block>
+              Posterior probability:{" "}
+              <M>{tex`3.96/(1+3.96) \approx 0.80`}</M>, much larger
+              than the single-test 0.17. Two independent positives
+              multiply likelihood ratios; the second positive
+              effectively moves a posterior of 0.17 (odds 0.20) up
+              by another factor of 19.8, yielding odds 3.96. The
+              second positive is the same evidence quantitatively as
+              the first but lands on a much larger prior, so it
+              dominates.
+            </p>
+            <p>
+              <strong>(c)</strong> Likelihood ratio:{" "}
+              <M>{tex`p(\Delta \mid H)/p(\Delta \mid \neg H)`}</M>.
+              Under <M>H</M> we expect a large{" "}
+              <M>{tex`\Delta`}</M> (the head was crucial; ablation
+              should hurt). Under <M>{tex`\neg H`}</M> we expect{" "}
+              <M>{tex`\Delta \approx 0`}</M> (the head was
+              irrelevant; ablation should do nothing). A strong
+              piece of evidence is a{" "}
+              <em>large</em>{" "}
+              <M>{tex`\Delta`}</M> that has small probability under{" "}
+              <M>{tex`\neg H`}</M>. A weak piece is{" "}
+              <M>{tex`\Delta`}</M> in a range that is plausible
+              under <em>both</em> hypotheses (e.g.&nbsp;noise-level
+              variation across re-runs is comparable to{" "}
+              <M>{tex`\Delta`}</M>).
+            </p>
+            <p>
+              Multiple comparisons / publication bias: in a typical
+              circuit-finding study the experimenter ablates many
+              heads and reports the ones with large{" "}
+              <M>{tex`\Delta`}</M>. The prior over &ldquo;this head
+              specifically&rdquo; is uniform across the{" "}
+              <M>{tex`L \times H`}</M> heads — which is the same as
+              applying a Bonferroni correction to whatever{" "}
+              <M>{tex`\Delta`}</M> threshold counts as &ldquo;large
+              enough.&rdquo; Without the correction (or without
+              honestly reporting how many heads were tried), an
+              experimenter who tries 100 heads and reports the
+              biggest <M>{tex`\Delta`}</M> is performing the
+              statistical equivalent of running 100 hypothesis tests
+              and only reporting the one that crossed the
+              significance threshold by chance. The likelihood-ratio
+              picture makes the failure mode precise: <em>conditioning
+              on which head you decided to look at</em>, the
+              null-hypothesis distribution of{" "}
+              <M>{tex`\Delta`}</M> is the maximum over all heads, not
+              the per-head distribution.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

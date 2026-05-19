@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Block, M } from "@/components/math/Math";
 import { tex } from "@/lib/tex";
@@ -131,6 +132,154 @@ export default function ProbCapstonePage() {
         gradient, and why softmax + cross-entropy has the cleanest
         gradient in all of deep learning.
       </Callout>
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              Pick a single token position. Let{" "}
+              <M>{tex`\mathbf{x} \in \mathbb{R}^{d}`}</M> be the
+              residual stream at that position,{" "}
+              <M>{tex`W_U \in \mathbb{R}^{|V| \times d}`}</M> the
+              unembedding (with rows{" "}
+              <M>{tex`\mathbf{u}_{i}`}</M>),{" "}
+              <M>{tex`\mathbf{p} = \mathrm{softmax}(W_U \mathbf{x})`}</M>{" "}
+              the next-token distribution.
+            </p>
+            <p>
+              <strong>(a) The logit-lens decomposition.</strong>{" "}
+              From chapter 6 (residual streams), write{" "}
+              <M>{tex`\mathbf{x} = \mathbf{x}_{0} + \sum_{\ell} \mathbf{c}_{\ell}`}</M>{" "}
+              where each <M>{tex`\mathbf{c}_{\ell}`}</M> is one
+              block&apos;s contribution. Show that the logit for any
+              token <M>i</M> is the sum
+              <Block>{tex`z_{i} = \mathbf{u}_{i} \cdot \mathbf{x} = \mathbf{u}_{i} \cdot \mathbf{x}_{0} + \sum_{\ell} \mathbf{u}_{i} \cdot \mathbf{c}_{\ell},`}</Block>
+              and hence the &ldquo;logit difference&rdquo;{" "}
+              <M>{tex`z_{\text{correct}} - z_{\text{wrong}}`}</M> is
+              also additive over blocks. Why does this fail for the{" "}
+              <em>probability</em>{" "}
+              <M>{tex`p_{i}`}</M>?
+            </p>
+            <p>
+              <strong>(b) KL of an ablation, channel-by-channel.</strong>{" "}
+              Suppose you ablate one residual stream channel{" "}
+              <M>j</M> by zeroing{" "}
+              <M>{tex`x_{j}`}</M>. The post-ablation logits become{" "}
+              <M>{tex`\tilde z_{i} = z_{i} - (W_U)_{ij} x_{j}`}</M>.
+              Show that for small <M>{tex`x_{j}`}</M> the KL between
+              clean and ablated next-token distributions has the
+              second-order expansion
+              <Block>{tex`\mathrm{KL}(p \,\|\, \tilde p) \approx \frac{1}{2}\,(W_U)_{:,j}^{\top}\, (\mathrm{diag}(\mathbf{p}) - \mathbf{p}\mathbf{p}^{\top})\, (W_U)_{:,j}\, x_{j}^{2},`}</Block>
+              and identify the central matrix as the Fisher
+              information of the categorical distribution at{" "}
+              <M>{tex`\mathbf{p}`}</M>. (You met this matrix in the
+              softmax chapter as the Jacobian{" "}
+              <M>{tex`J = \mathrm{diag}(\mathbf{p}) - \mathbf{p}\mathbf{p}^{\top}`}</M>.)
+            </p>
+            <p>
+              <strong>(c) Reading the result.</strong> Use (b) to
+              explain three observations interpreters make in
+              practice. (i) Channels with{" "}
+              <M>{tex`x_{j} \approx 0`}</M> on the input never
+              matter for ablations on that input. (ii) The{" "}
+              <em>direction</em>{" "}
+              <M>{tex`(W_U)_{:,j}`}</M> matters as much as its
+              magnitude — channels whose unembedding column is
+              orthogonal to the current{" "}
+              <M>{tex`\mathbf{p}`}</M>-weighted spread don&apos;t
+              affect the output even if{" "}
+              <M>{tex`x_{j}`}</M> is large. (iii) Two channels can
+              be individually unimportant but jointly crucial; what
+              term in (b) explains this when you ablate{" "}
+              <em>two</em> channels simultaneously?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a): probability involves softmax, which is
+            nonlinear. For (b): KL between two categoricals close to
+            each other equals (1/2) × Fisher × (logit shift)², a
+            standard Taylor expansion. For (c): if{" "}
+            <M>{tex`(W_U)_{:,j}`}</M> is a constant vector, the
+            quadratic form vanishes; for two channels the
+            cross-term involves{" "}
+            <M>{tex`(W_U)_{:, j_1}^{\top} J (W_U)_{:, j_2}`}</M>.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> The logit{" "}
+              <M>{tex`z_{i} = \mathbf{u}_{i} \cdot \mathbf{x}`}</M>{" "}
+              is linear in <M>{tex`\mathbf{x}`}</M>; substituting
+              the residual decomposition gives the additive form.
+              The same is true for any{" "}
+              <em>linear</em> functional of the logits, in
+              particular logit differences. The <em>probability</em>{" "}
+              <M>{tex`p_{i} = \exp(z_{i})/\sum_{j} \exp(z_{j})`}</M>{" "}
+              is nonlinear in <M>{tex`\mathbf{x}`}</M>; you cannot
+              attribute &ldquo;1% of the probability&rdquo; to one
+              block in a meaningful way without choosing a baseline
+              and linearizing — which is exactly what attribution
+              patching does.
+            </p>
+            <p>
+              <strong>(b)</strong> Set{" "}
+              <M>{tex`\mathbf{\delta} = -(W_U)_{:,j} x_{j}`}</M> so
+              that{" "}
+              <M>{tex`\tilde{\mathbf{z}} = \mathbf{z} + \mathbf{\delta}`}</M>.
+              For two categoricals related by a small shift in
+              logits,
+              <Block>{tex`\mathrm{KL}(p \,\|\, \tilde p) = \frac{1}{2} \mathbf{\delta}^{\top} J \mathbf{\delta} + O(\|\mathbf{\delta}\|^{3}),`}</Block>
+              with{" "}
+              <M>{tex`J = \mathrm{diag}(\mathbf{p}) - \mathbf{p}\mathbf{p}^{\top}`}</M>{" "}
+              the Fisher matrix of the categorical at{" "}
+              <M>{tex`\mathbf{p}`}</M>. (Derivation: Taylor-expand
+              <M>{tex`\log Z(\mathbf{z} + \mathbf{\delta})`}</M> to
+              second order; the first-order term cancels in KL, and
+              the Hessian of the log-partition is exactly{" "}
+              <M>J</M>.) Substituting{" "}
+              <M>{tex`\mathbf{\delta}`}</M> gives the displayed
+              expression.
+            </p>
+            <p>
+              <strong>(c)</strong> (i){" "}
+              <M>{tex`x_{j} = 0`}</M> means the ablation actually
+              changes nothing —{" "}
+              <M>{tex`\tilde{\mathbf{z}} = \mathbf{z}`}</M> — so KL
+              is zero. Intuitive but easy to miss: a channel
+              important for some inputs may be silent on others,
+              and an ablation on the silent input gives no signal.
+              (ii) The quadratic form{" "}
+              <M>{tex`\mathbf{u}^{\top} J \mathbf{u}`}</M> is the
+              Fisher inner product. For{" "}
+              <M>{tex`\mathbf{u} = \alpha \mathbf{1}`}</M>{" "}
+              (constant), <M>{tex`J \mathbf{1} = \mathbf{p} - \mathbf{p} = 0`}</M>{" "}
+              (the softmax shift-invariance reflected here),
+              so a unembedding column proportional to constant
+              gives KL = 0 — this is the same null direction we met
+              in the softmax challenge. More generally, a column{" "}
+              <M>{tex`(W_U)_{:,j}`}</M> in the kernel of <M>J</M>{" "}
+              moves the logits in a way the softmax cannot
+              distinguish. (iii) Ablating two channels{" "}
+              <M>{tex`j_{1}, j_{2}`}</M> introduces a cross-term{" "}
+              <M>{tex`x_{j_{1}} x_{j_{2}} (W_U)_{:,j_{1}}^{\top} J (W_U)_{:,j_{2}}`}</M>.
+              If the unembedding columns are aligned in
+              Fisher-inner-product (e.g.&nbsp;they push
+              probability in the same direction), the joint effect
+              can be twice the sum of singletons; if they cancel,
+              the joint effect can be smaller than either. This is
+              why &ldquo;mean ablation&rdquo; or &ldquo;leave-one-out&rdquo;
+              metrics can wildly mislead in the presence of
+              redundant or interacting components — and why
+              activation patching, which always uses the full
+              residual stream from a counterfactual run, gives
+              cleaner answers than per-channel ablation.
+            </p>
+          </>
+        }
+      />
     </ChapterShell>
   );
 }

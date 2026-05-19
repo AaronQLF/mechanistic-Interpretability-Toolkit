@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -155,6 +156,139 @@ export default function SoftmaxPage() {
               "softmax(z + c·1) = softmax(z). Only logit differences matter.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              Let{" "}
+              <M>{tex`\mathbf{p} = \mathrm{softmax}(\mathbf{z})`}</M>{" "}
+              with{" "}
+              <M>{tex`\mathbf{z} \in \mathbb{R}^{K}`}</M>.
+            </p>
+            <p>
+              <strong>(a)</strong> Compute the Jacobian{" "}
+              <M>{tex`\partial p_{i}/\partial z_{j}`}</M> and show it
+              equals
+              <Block>{tex`\frac{\partial p_{i}}{\partial z_{j}} = p_{i}(\delta_{ij} - p_{j}),`}</Block>
+              where{" "}
+              <M>{tex`\delta_{ij}`}</M> is the Kronecker delta. Hence
+              the Jacobian as a matrix is{" "}
+              <M>{tex`J = \mathrm{diag}(\mathbf{p}) - \mathbf{p}\mathbf{p}^{\top}`}</M>{" "}
+              — a rank-deficient (singular) matrix. Identify its
+              null direction; relate it to softmax&apos;s
+              shift-invariance.
+            </p>
+            <p>
+              <strong>(b)</strong> Cross-entropy loss with a one-hot
+              target{" "}
+              <M>{tex`y \in \{1, \ldots, K\}`}</M> is{" "}
+              <M>{tex`L = -\log p_{y}`}</M>. Show that
+              <Block>{tex`\frac{\partial L}{\partial z_{j}} = p_{j} - \delta_{jy} = (\mathbf{p} - \mathbf{e}_{y})_{j},`}</Block>
+              the famous &ldquo;model probability minus one-hot
+              target&rdquo; gradient. Notice the Jacobian computed in
+              (a) collapsed into something elementary; explain why
+              this <em>specific</em> combination of softmax + cross-entropy
+              has a much cleaner gradient than either piece would
+              alone.
+            </p>
+            <p>
+              <strong>(c) The temperature has a hidden cost.</strong>{" "}
+              Sometimes one trains with logits divided by a fixed{" "}
+              <M>{tex`T > 0`}</M>:{" "}
+              <M>{tex`\mathbf{p}^{(T)} = \mathrm{softmax}(\mathbf{z}/T)`}</M>.
+              Recompute the cross-entropy gradient with respect to{" "}
+              <M>{tex`\mathbf{z}`}</M> in this case. What does the
+              <M>{tex`1/T`}</M> factor mean for training dynamics, and
+              why is using temperature scaling at <em>training time</em>{" "}
+              equivalent to rescaling the learning rate by{" "}
+              <M>{tex`1/T`}</M>?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a): write{" "}
+            <M>{tex`p_{i} = e^{z_{i}}/Z`}</M> with{" "}
+            <M>{tex`Z = \sum_{k} e^{z_{k}}`}</M>. Differentiate with
+            quotient rule and recognize{" "}
+            <M>{tex`\partial Z/\partial z_{j} = e^{z_{j}}`}</M>. For
+            (b): apply the chain rule via the Jacobian of (a) and
+            simplify; almost everything cancels. For (c): the chain
+            rule introduces an extra <M>{tex`1/T`}</M> factor.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong>{" "}
+              <M>{tex`p_{i} = e^{z_{i}}/Z`}</M> with{" "}
+              <M>{tex`Z = \sum_{k} e^{z_{k}}`}</M>.
+              <Block>{tex`\frac{\partial p_{i}}{\partial z_{j}} = \frac{\delta_{ij} e^{z_{i}} Z - e^{z_{i}} e^{z_{j}}}{Z^{2}} = \delta_{ij} p_{i} - p_{i} p_{j} = p_{i}(\delta_{ij} - p_{j}).`}</Block>
+              The matrix form{" "}
+              <M>{tex`J = \mathrm{diag}(\mathbf{p}) - \mathbf{p}\mathbf{p}^{\top}`}</M>{" "}
+              has{" "}
+              <M>{tex`J \mathbf{1} = \mathbf{p} - \mathbf{p}(\mathbf{p}^{\top}\mathbf{1}) = \mathbf{p} - \mathbf{p} = \mathbf{0}`}</M>.
+              So{" "}
+              <M>{tex`\mathbf{1}`}</M> is in the null space; this is
+              the infinitesimal version of shift-invariance. Adding
+              the same constant to every logit moves you along the
+              null direction and changes nothing.
+            </p>
+            <p>
+              <strong>(b)</strong>{" "}
+              <M>{tex`L = -\log p_{y} = -z_{y} + \log Z`}</M>. Direct:{" "}
+              <M>{tex`\partial L/\partial z_{j} = -\delta_{jy} + (1/Z) e^{z_{j}} = p_{j} - \delta_{jy}`}</M>.
+              In vector form,{" "}
+              <M>{tex`\nabla_{\mathbf{z}} L = \mathbf{p} - \mathbf{e}_{y}`}</M>.
+              The Jacobian formula from (a) plus chain rule gives{" "}
+              <M>{tex`\nabla_{\mathbf{z}} L = J^{\top} (-\mathbf{e}_{y}/p_{y})`}</M>;
+              expanding,{" "}
+              <M>{tex`(J^{\top} \mathbf{v})_{j} = p_{j} v_{j} - p_{j} \mathbf{p}^{\top} \mathbf{v}`}</M>{" "}
+              with{" "}
+              <M>{tex`\mathbf{v} = -\mathbf{e}_{y}/p_{y}`}</M> gives{" "}
+              <M>{tex`p_{j}(-\delta_{jy}/p_{y}) - p_{j}(-1) = -\delta_{jy} + p_{j}`}</M>,
+              same answer.
+            </p>
+            <p>
+              The cancellation is structural: cross-entropy is the
+              negative log of the softmax output, and{" "}
+              <M>{tex`\log \mathrm{softmax}(\mathbf{z}) = \mathbf{z} - \log Z`}</M>{" "}
+              is &ldquo;almost linear&rdquo; in{" "}
+              <M>{tex`\mathbf{z}`}</M> — only the log-sum-exp piece
+              produces a softmax in the gradient, and the one-hot
+              target picks out a single coordinate of the linear
+              part. This is why every framework implements
+              &ldquo;cross-entropy with logits&rdquo; as a single
+              numerically-stable op and not as the literal
+              composition of softmax and log.
+            </p>
+            <p>
+              <strong>(c)</strong> Replace{" "}
+              <M>{tex`\mathbf{z}`}</M> with{" "}
+              <M>{tex`\mathbf{z}/T`}</M>; chain rule introduces a{" "}
+              <M>{tex`1/T`}</M> factor:
+              <Block>{tex`\frac{\partial L^{(T)}}{\partial \mathbf{z}} = \frac{1}{T}\bigl(\mathbf{p}^{(T)} - \mathbf{e}_{y}\bigr).`}</Block>
+              For training: a gradient step{" "}
+              <M>{tex`\mathbf{z} \leftarrow \mathbf{z} - \eta\, \nabla_{\mathbf{z}} L^{(T)}`}</M>{" "}
+              is the same as a step at temperature 1 with learning
+              rate <M>{tex`\eta/T`}</M> — except that the
+              probabilities{" "}
+              <M>{tex`\mathbf{p}^{(T)}`}</M> are the temperature-T
+              softmax of{" "}
+              <M>{tex`\mathbf{z}`}</M>, not the temperature-1
+              softmax. Two practical consequences. (1) Training
+              losses reported at different <M>T</M> are not directly
+              comparable; the gradient magnitude is{" "}
+              <M>{tex`O(1/T)`}</M>. (2) Distillation losses (Hinton)
+              that use a high <M>T</M> on the teacher must
+              compensate by multiplying by{" "}
+              <M>{tex`T^{2}`}</M> to keep the gradient scale matched
+              to the standard cross-entropy term.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

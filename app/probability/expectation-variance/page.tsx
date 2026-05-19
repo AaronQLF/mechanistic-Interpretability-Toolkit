@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -116,6 +117,138 @@ export default function ExpectationVariancePage() {
               "That's the probability of any single face, not the mean of the outcomes.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>(a)</strong> Prove the variance-of-a-sum
+              identity. For random variables{" "}
+              <M>{tex`X_{1}, \ldots, X_{n}`}</M> and constants{" "}
+              <M>{tex`a_{1}, \ldots, a_{n}`}</M>, show
+              <Block>{tex`\operatorname{Var}\!\left[\sum_{i=1}^{n} a_{i} X_{i}\right] = \sum_{i=1}^{n} a_{i}^{2}\, \operatorname{Var}[X_{i}] + 2 \sum_{i < j} a_{i} a_{j}\, \operatorname{Cov}(X_{i}, X_{j}),`}</Block>
+              where{" "}
+              <M>{tex`\operatorname{Cov}(X, Y) = \mathbb{E}[XY] - \mathbb{E}[X]\mathbb{E}[Y]`}</M>.
+              When the <M>{tex`X_{i}`}</M> are uncorrelated this
+              collapses to the &ldquo;sum the squared
+              coefficients&rdquo; rule. For i.i.d.&nbsp;<M>{tex`X_{i}`}</M>{" "}
+              with variance{" "}
+              <M>{tex`\sigma^{2}`}</M>, deduce the standard error of
+              the sample mean:
+              <Block>{tex`\operatorname{Var}\!\left[\frac{1}{n}\sum_{i=1}^{n} X_{i}\right] = \frac{\sigma^{2}}{n}.`}</Block>
+            </p>
+            <p>
+              <strong>(b)</strong> Show <strong>Chebyshev&apos;s
+              inequality</strong>: for any{" "}
+              <M>{tex`k > 0`}</M>,
+              <Block>{tex`P\bigl(|X - \mathbb{E}[X]| \geq k\, \sigma[X]\bigr) \leq \frac{1}{k^{2}}.`}</Block>
+              Combine with (a) to derive the{" "}
+              <strong>weak law of large numbers</strong>: for
+              i.i.d.&nbsp;<M>{tex`X_{i}`}</M> with finite variance,{" "}
+              <M>{tex`\bar{X}_{n} \to \mathbb{E}[X]`}</M> in
+              probability. State the rate.
+            </p>
+            <p>
+              <strong>(c)</strong> A mech-interp metric is the{" "}
+              &ldquo;average causal effect&rdquo; of an intervention,
+              estimated as a sample mean over <M>n</M> prompts
+              of{" "}
+              <M>{tex`Y_{i} = (\text{logit diff with}) - (\text{logit diff without})`}</M>.
+              You see <M>{tex`\hat{\mu} = 0.31`}</M> on{" "}
+              <M>{tex`n = 50`}</M> prompts, with empirical sample
+              standard deviation <M>{tex`\hat{\sigma} = 1.20`}</M>.
+              Compute a <M>{tex`95\%`}</M> confidence interval for
+              the true mean, using the asymptotic normality of the
+              sample mean. Is &ldquo;the head matters on
+              average&rdquo; well-supported by this evidence? How
+              many prompts would you need to halve the width of the
+              CI?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a): use{" "}
+            <M>{tex`\operatorname{Var}[Y] = \mathbb{E}[Y^{2}] - \mathbb{E}[Y]^{2}`}</M>{" "}
+            with{" "}
+            <M>{tex`Y = \sum a_{i} X_{i}`}</M> and expand. For (b):
+            apply Markov&apos;s inequality{" "}
+            <M>{tex`P(Z \ge t) \le \mathbb{E}[Z]/t`}</M> to{" "}
+            <M>{tex`Z = (X - \mathbb{E}[X])^{2}`}</M>. For (c): the
+            CI half-width is{" "}
+            <M>{tex`1.96\, \hat\sigma/\sqrt{n}`}</M>; halving it
+            requires <M>4n</M> samples.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> Let{" "}
+              <M>{tex`Y = \sum_{i} a_{i} X_{i}`}</M>. Linearity gives{" "}
+              <M>{tex`\mathbb{E}[Y] = \sum_{i} a_{i} \mathbb{E}[X_{i}]`}</M>.
+              Then
+              <Block>{tex`\operatorname{Var}[Y] = \mathbb{E}\!\left[\Bigl(\sum_{i} a_{i}(X_{i} - \mathbb{E}[X_{i}])\Bigr)^{2}\right] = \sum_{i, j} a_{i} a_{j}\, \mathbb{E}\bigl[(X_{i} - \mathbb{E}[X_{i}])(X_{j} - \mathbb{E}[X_{j}])\bigr],`}</Block>
+              and the inner expectation is{" "}
+              <M>{tex`\operatorname{Var}[X_{i}]`}</M> when{" "}
+              <M>{tex`i = j`}</M>, otherwise{" "}
+              <M>{tex`\operatorname{Cov}(X_{i}, X_{j})`}</M>.
+              Splitting into diagonal and off-diagonal, and combining
+              symmetric{" "}
+              <M>{tex`(i, j)`}</M> and{" "}
+              <M>{tex`(j, i)`}</M> terms, gives the formula. For
+              i.i.d.&nbsp;<M>{tex`X_{i}`}</M> with variance{" "}
+              <M>{tex`\sigma^{2}`}</M> and{" "}
+              <M>{tex`a_{i} = 1/n`}</M>, the cross-terms vanish
+              (independence) and{" "}
+              <M>{tex`\operatorname{Var}[\bar X_{n}] = n \cdot (1/n)^{2} \sigma^{2} = \sigma^{2}/n`}</M>.
+            </p>
+            <p>
+              <strong>(b)</strong> Apply Markov to{" "}
+              <M>{tex`Z = (X - \mathbb{E}[X])^{2} \ge 0`}</M> at
+              threshold{" "}
+              <M>{tex`t = k^{2} \sigma^{2}`}</M>:{" "}
+              <M>{tex`P(Z \ge k^{2} \sigma^{2}) \le \mathbb{E}[Z]/(k^{2} \sigma^{2}) = 1/k^{2}`}</M>.
+              Squaring inside the absolute value gives Chebyshev.
+              Apply to{" "}
+              <M>{tex`\bar X_{n}`}</M>:{" "}
+              <M>{tex`P(|\bar X_{n} - \mu| \ge \varepsilon) \le \operatorname{Var}[\bar X_{n}]/\varepsilon^{2} = \sigma^{2}/(n \varepsilon^{2}) \to 0`}</M>{" "}
+              as <M>{tex`n \to \infty`}</M>. The rate is{" "}
+              <M>{tex`O(1/(n \varepsilon^{2}))`}</M> for the
+              Chebyshev bound; with stronger assumptions
+              (subexponential tails, etc.) the rate sharpens to{" "}
+              <M>{tex`e^{-c n \varepsilon^{2}}`}</M> via Hoeffding /
+              Chernoff.
+            </p>
+            <p>
+              <strong>(c)</strong> Sample standard error{" "}
+              <M>{tex`\hat\sigma/\sqrt{n} = 1.20/\sqrt{50} \approx 0.170`}</M>.
+              The 95% CI is{" "}
+              <M>{tex`0.31 \pm 1.96 \cdot 0.170 = 0.31 \pm 0.333`}</M>,
+              i.e.&nbsp;<M>{tex`(-0.02, 0.64)`}</M>. The interval
+              <em>contains zero</em>, so on this evidence we cannot
+              reject the hypothesis &ldquo;the head&apos;s average
+              effect is zero.&rdquo; The point estimate of 0.31
+              looks suggestive but the noise is too large for the
+              sample size.
+            </p>
+            <p>
+              To halve the CI half-width from 0.333 to 0.166, we
+              need to halve the standard error{" "}
+              <M>{tex`\hat\sigma/\sqrt{n}`}</M> — i.e.&nbsp;quadruple{" "}
+              <M>n</M> from 50 to 200, assuming{" "}
+              <M>{tex`\hat\sigma`}</M> stays the same. This{" "}
+              <M>{tex`1/\sqrt{n}`}</M> rate is the entire reason
+              interpretability evals need either large prompt sets
+              or per-prompt paired analyses. (Paired comparisons,
+              when applicable, can dramatically shrink the relevant
+              variance because the &ldquo;baseline noise per
+              prompt&rdquo; cancels — a strong reason to compare{" "}
+              <em>same prompt with vs.&nbsp;without ablation</em>{" "}
+              rather than two independent prompt samples.)
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

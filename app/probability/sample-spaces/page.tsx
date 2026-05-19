@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -133,6 +134,127 @@ export default function SampleSpacesPage() {
               "Too generous — you'd need 12 outcomes out of 36, but only 6 sums are divisible by 6.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              Let <M>{tex`\Omega`}</M> be a finite sample space and{" "}
+              <M>{tex`A_1, \ldots, A_n \subseteq \Omega`}</M> be
+              events (not necessarily disjoint).
+            </p>
+            <p>
+              <strong>(a)</strong> Prove the{" "}
+              <strong>inclusion-exclusion</strong> formula
+              <Block>{tex`P\!\left(\bigcup_{i=1}^{n} A_{i}\right) = \sum_{k=1}^{n} (-1)^{k+1} \!\!\sum_{1 \le i_{1} < \cdots < i_{k} \le n}\! P(A_{i_{1}} \cap \cdots \cap A_{i_{k}})`}</Block>
+              from the three probability axioms (start with{" "}
+              <M>{tex`n = 2`}</M> and induct).
+            </p>
+            <p>
+              <strong>(b)</strong> Apply it to the &ldquo;hat-check
+              problem&rdquo;: <M>n</M> guests check their hats; the
+              hats are returned in a uniformly random order. Let{" "}
+              <M>{tex`A_{i}`}</M> be the event that guest <M>i</M>{" "}
+              gets her own hat. Compute{" "}
+              <M>{tex`P(\bigcup A_{i})`}</M> and show that the
+              probability that <em>nobody</em> gets the right hat
+              tends to <M>{tex`1/e`}</M> as{" "}
+              <M>{tex`n \to \infty`}</M>.
+            </p>
+            <p>
+              <strong>(c)</strong> A language-model analogue. A model
+              has vocabulary <M>V</M> with{" "}
+              <M>{tex`|V| = N`}</M>. On a particular prompt the
+              model places probability{" "}
+              <M>{tex`p_{i}`}</M> on token <M>i</M>. You sample{" "}
+              <M>n</M> times independently. Express the probability
+              of seeing token <M>{tex`i^\star`}</M> at least once as
+              a complement, and use it to show that for large{" "}
+              <M>n</M> with small <M>{tex`p_{i^\star}`}</M> this
+              equals{" "}
+              <M>{tex`1 - e^{-n p_{i^\star}}`}</M> to leading order.
+              When does &ldquo;low-probability tokens are basically
+              never sampled&rdquo; break down?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a)&nbsp;<M>{tex`n=2`}</M>: write{" "}
+            <M>{tex`A \cup B = A \sqcup (B \setminus A)`}</M> and
+            apply additivity twice. For (b): by symmetry every{" "}
+            <M>{tex`P(A_{i_1} \cap \cdots \cap A_{i_k})`}</M> equals{" "}
+            <M>{tex`(n-k)!/n!`}</M>. For (c): the probability of
+            token <M>{tex`i^\star`}</M>{" "}
+            <em>never</em> appearing in <M>n</M> samples is{" "}
+            <M>{tex`(1 - p_{i^\star})^{n}`}</M>.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> For <M>{tex`n = 2`}</M>: let{" "}
+              <M>{tex`B' = B \setminus A`}</M>. Then{" "}
+              <M>A</M> and <M>{tex`B'`}</M> are disjoint, so{" "}
+              <M>{tex`P(A \cup B) = P(A) + P(B')`}</M>. Also{" "}
+              <M>{tex`B = (A \cap B) \sqcup B'`}</M>, so{" "}
+              <M>{tex`P(B) = P(A \cap B) + P(B')`}</M>; substituting
+              gives{" "}
+              <M>{tex`P(A \cup B) = P(A) + P(B) - P(A \cap B)`}</M>.
+              The general case follows by induction on <M>n</M>:
+              apply <M>{tex`n=2`}</M> to{" "}
+              <M>{tex`A_n`}</M> and{" "}
+              <M>{tex`\bigcup_{i<n} A_i`}</M>, then expand the
+              intersection{" "}
+              <M>{tex`A_n \cap \bigcup_{i<n} A_i = \bigcup_{i<n} (A_n \cap A_i)`}</M>{" "}
+              using the inductive hypothesis. The signs collapse
+              into the alternating-sign formula stated.
+            </p>
+            <p>
+              <strong>(b)</strong> By symmetry, for any{" "}
+              <M>k</M>-subset of guests, the probability that all{" "}
+              <M>k</M> get their own hats is{" "}
+              <M>{tex`(n-k)!/n!`}</M> (fix those <M>k</M>; the
+              remaining <M>{tex`n-k`}</M> hats permute freely). There
+              are <M>{tex`\binom{n}{k}`}</M> such subsets, so
+              <Block>{tex`P\!\left(\bigcup A_{i}\right) = \sum_{k=1}^{n} (-1)^{k+1} \binom{n}{k} \frac{(n-k)!}{n!} = \sum_{k=1}^{n} \frac{(-1)^{k+1}}{k!}.`}</Block>
+              The probability of <em>no</em> guest getting their own
+              hat is the complement,{" "}
+              <M>{tex`\sum_{k=0}^{n} (-1)^{k}/k!`}</M>, the partial
+              sum of the Taylor series of{" "}
+              <M>{tex`e^{-1}`}</M>. As{" "}
+              <M>{tex`n \to \infty`}</M> this tends to{" "}
+              <M>{tex`1/e \approx 0.368`}</M>.
+            </p>
+            <p>
+              <strong>(c)</strong> The probability that token{" "}
+              <M>{tex`i^\star`}</M> is{" "}
+              <em>never</em> drawn in <M>n</M> independent samples is{" "}
+              <M>{tex`(1 - p_{i^\star})^{n}`}</M>; the complement (at
+              least once) is{" "}
+              <M>{tex`1 - (1 - p_{i^\star})^{n}`}</M>. Use{" "}
+              <M>{tex`\log(1 - p) \approx -p`}</M> for small{" "}
+              <M>p</M>: <M>{tex`(1 - p_{i^\star})^{n} \approx e^{-n p_{i^\star}}`}</M>.
+              So the probability of seeing token{" "}
+              <M>{tex`i^\star`}</M> at least once is{" "}
+              <M>{tex`\approx 1 - e^{-n p_{i^\star}}`}</M>.
+            </p>
+            <p>
+              The approximation breaks down precisely when{" "}
+              <M>{tex`n p_{i^\star} \gtrsim 1`}</M> — i.e.&nbsp;the
+              expected number of times you would see the token is
+              order 1 or larger. For a 50K-vocab model with a
+              one-in-a-million probability on token{" "}
+              <M>{tex`i^\star`}</M>, you need on the order of{" "}
+              <M>{tex`10^{6}`}</M> samples before that token starts
+              to actually appear. This is why long-tail evaluation is
+              expensive, and why &ldquo;the model never produces
+              this token&rdquo; claims need to be verified at scale,
+              not on a few thousand samples.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -118,6 +119,123 @@ export default function DistributionsPage() {
               "A degenerate but legal distribution: outcome 3 happens with probability 1.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              Consider categorical distributions on{" "}
+              <M>K</M> outcomes. The set of valid PMFs is the{" "}
+              <strong>probability simplex</strong>
+              <Block>{tex`\Delta^{K-1} = \Bigl\{\, \mathbf{p} \in \mathbb{R}^{K} : p_{i} \geq 0,\ \sum_{i=1}^{K} p_{i} = 1 \,\Bigr\}.`}</Block>
+            </p>
+            <p>
+              <strong>(a)</strong> Show <M>{tex`\Delta^{K-1}`}</M> is
+              a convex set: any mixture{" "}
+              <M>{tex`\lambda \mathbf{p} + (1 - \lambda)\mathbf{q}`}</M>{" "}
+              with <M>{tex`\lambda \in [0, 1]`}</M> of two PMFs is a
+              PMF. What does this mean operationally for sampling?
+            </p>
+            <p>
+              <strong>(b)</strong> The set of PMFs is{" "}
+              <M>{tex`(K-1)`}</M>-dimensional, not{" "}
+              <M>K</M>-dimensional. Identify the constraint that
+              kills one degree of freedom and produce an explicit
+              parameterization{" "}
+              <M>{tex`\mathbb{R}^{K-1} \to \Delta^{K-1}`}</M> using
+              the softmax function from chapter 6 — and show that
+              softmax has exactly one redundant input direction.
+            </p>
+            <p>
+              <strong>(c)</strong> Suppose two language models{" "}
+              <M>{tex`p_{\theta}`}</M> and{" "}
+              <M>{tex`p_{\phi}`}</M> output PMFs over the same
+              vocabulary. Show that the set{" "}
+              <M>{tex`\{\lambda p_{\theta} + (1-\lambda) p_{\phi} : \lambda \in [0, 1]\}`}</M>{" "}
+              is itself a valid family of next-token distributions
+              (this is the entire content of <em>model averaging</em>{" "}
+              and ensembling). Then argue that, in general, the{" "}
+              <em>geometric</em> mixture{" "}
+              <M>{tex`p_{\theta}^{\lambda} p_{\phi}^{1-\lambda} / Z`}</M>{" "}
+              is also a valid PMF (this is &ldquo;product of
+              experts&rdquo;), but the two mixtures are different
+              distributions. Which one is more peaky in general?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a): check non-negativity and total mass directly.
+            For (b): the constraint{" "}
+            <M>{tex`\sum p_i = 1`}</M> is one linear equation in{" "}
+            <M>K</M> unknowns; softmax of any vector{" "}
+            <M>{tex`\mathbf{z} + c\,\mathbf{1}`}</M> is the same.
+            For (c): compare{" "}
+            <M>{tex`\lambda p + (1-\lambda) q`}</M> vs.&nbsp;
+            <M>{tex`p^{\lambda} q^{1-\lambda}/Z`}</M> at any{" "}
+            outcome where one is small and the other large.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> If{" "}
+              <M>{tex`p_i, q_i \geq 0`}</M> and{" "}
+              <M>{tex`\lambda \in [0,1]`}</M> then{" "}
+              <M>{tex`\lambda p_i + (1-\lambda) q_i \geq 0`}</M>; and{" "}
+              <M>{tex`\sum_i (\lambda p_i + (1-\lambda) q_i) = \lambda + (1-\lambda) = 1`}</M>.
+              So the mixture is a PMF. Operationally: to sample from
+              the mixture, flip a coin with probability{" "}
+              <M>{tex`\lambda`}</M>; on heads sample from{" "}
+              <M>p</M>, on tails from <M>q</M>. The marginal is
+              exactly the mixture PMF.
+            </p>
+            <p>
+              <strong>(b)</strong> The constraint{" "}
+              <M>{tex`\sum p_i = 1`}</M> reduces dimension by 1, so{" "}
+              <M>{tex`\Delta^{K-1}`}</M> is a{" "}
+              <M>{tex`(K-1)`}</M>-dimensional simplex. Softmax{" "}
+              <M>{tex`\sigma : \mathbb{R}^{K} \to \Delta^{K-1}`}</M>{" "}
+              is surjective but not injective:{" "}
+              <M>{tex`\sigma(\mathbf{z}) = \sigma(\mathbf{z} + c\mathbf{1})`}</M>{" "}
+              for every <M>{tex`c \in \mathbb{R}`}</M> (the
+              shift-invariance from chapter 6). The kernel of the
+              map is exactly the 1D subspace{" "}
+              <M>{tex`\mathbb{R} \cdot \mathbf{1}`}</M>; quotienting
+              gives a bijection{" "}
+              <M>{tex`\mathbb{R}^{K}/\mathbb{R}\mathbf{1} \cong \Delta^{K-1}`}</M>,
+              which is <M>{tex`(K-1)`}</M>-dimensional, matching the
+              simplex. So &ldquo;parameterize a categorical with{" "}
+              <M>K</M> logits&rdquo; secretly has one redundant
+              degree of freedom; we just don&apos;t bother removing
+              it.
+            </p>
+            <p>
+              <strong>(c)</strong> Linear mixtures of PMFs are PMFs
+              (part a), so model averaging is well-defined.
+              Geometric mixtures{" "}
+              <M>{tex`r_i \propto p_i^{\lambda} q_i^{1-\lambda}`}</M>{" "}
+              also produce non-negative weights summing to 1 after
+              the normalizer <M>Z</M>, so they are PMFs too. The
+              two are genuinely different. Take{" "}
+              <M>{tex`\lambda = 1/2`}</M> and an outcome <M>i</M>{" "}
+              where <M>{tex`p_i = 0.9`}</M>,{" "}
+              <M>{tex`q_i = 0.1`}</M>: linear mixture gives{" "}
+              <M>{tex`0.5`}</M>; geometric gives{" "}
+              <M>{tex`\sqrt{0.09} = 0.3`}</M> before normalizing.
+              The geometric mixture is{" "}
+              <em>peakier</em>: an outcome that is unlikely under{" "}
+              <em>any</em> single model is suppressed in the
+              product, while in the linear mixture it just gets
+              weighted-averaged. Intuition: linear mixture is
+              &ldquo;OR over models&rdquo;; geometric is
+              &ldquo;AND.&rdquo; This is exactly the difference
+              between an ensemble that votes (linear) and one that
+              requires consensus (geometric / product of experts).
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

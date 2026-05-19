@@ -38,7 +38,16 @@ An interactive textbook for the math behind mechanistic interpretability — sta
   - Gradient descent → animated trajectory on bowl, ellipse, saddle, and Rosenbrock banana
   - Backpropagation → small computation graph with forward values and backward gradients on every edge
   - Capstone → integrated gradients with path samples and completeness check
-- **Curriculum map** on the landing page with stub pages for the upcoming Neural Networks, Transformers, and Mech-interp Circuits modules.
+- **Neural Networks** module (6 chapters + capstone), same shape:
+  - The neuron → weights, bias, activation, decision boundary on the BackpropToy
+  - Linear layers → row vs column view, MatrixTransform2D for the geometry
+  - Nonlinearities → ReLU / GELU / sigmoid / tanh on shared axes, with toggles
+  - Embeddings & one-hot → click a token to see the row lookup happen
+  - The MLP → 4 → 6 → 4 block with editable input, ReLU mask visible in real time
+  - LayerNorm & residual connections → live mean/std with γ, β knobs
+  - Capstone → linear-representation hypothesis, superposition, MLPs as KV memory
+- Every chapter ends with a **hard challenge**: a multi-part open-ended problem with hint and toggleable solution, written in the voice of graduate exercises rather than warm-up questions.
+- **Curriculum map** on the landing page with stub pages for the upcoming Transformers and Mech-interp Circuits modules.
 - Light + dark mode, persistent chapter progress dots (localStorage), responsive layout.
 
 ## Tech
@@ -76,7 +85,8 @@ app/                          # routes
   linear-algebra/             # LA module + 12 chapter pages
   probability/                # Probability module + 10 chapter pages
   calculus/                   # Calculus module + 9 chapter pages
-  neural-networks/, ...       # stubs
+  neural-networks/            # NN module + 7 chapter pages
+  transformers/, circuits/    # stubs
 components/
   ui/                         # header, footer, sidebar, theme toggle, curriculum map
   content/                    # ChapterShell, Section, Callout, Quiz, Exercise, Figure

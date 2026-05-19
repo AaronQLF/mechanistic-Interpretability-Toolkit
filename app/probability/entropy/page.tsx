@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -124,6 +125,118 @@ export default function EntropyPage() {
               "Entropy in bits is logarithmic in the number of outcomes — log₂, not the count.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>(a) Maximum entropy.</strong> Show that among
+              all distributions on{" "}
+              <M>{tex`K`}</M> outcomes, the uniform one achieves the
+              maximum entropy{" "}
+              <M>{tex`\log K`}</M>. Two paths: a Lagrange-multiplier
+              proof using the constraint{" "}
+              <M>{tex`\sum p_{i} = 1`}</M>, or a one-line proof using
+              Jensen&apos;s inequality applied to the convex function{" "}
+              <M>{tex`-\log`}</M>. Do the Jensen version.
+            </p>
+            <p>
+              <strong>(b) Concavity of entropy.</strong> Show that{" "}
+              <M>{tex`H(\mathbf{p})`}</M> is a concave function of
+              the PMF{" "}
+              <M>{tex`\mathbf{p}`}</M>: for any{" "}
+              <M>{tex`\lambda \in [0, 1]`}</M> and PMFs{" "}
+              <M>{tex`\mathbf{p}, \mathbf{q}`}</M>,
+              <Block>{tex`H(\lambda \mathbf{p} + (1-\lambda) \mathbf{q}) \geq \lambda H(\mathbf{p}) + (1 - \lambda) H(\mathbf{q}).`}</Block>
+              Interpret operationally: mixing two distributions
+              cannot reduce uncertainty.
+            </p>
+            <p>
+              <strong>(c) Per-token entropy in a transformer.</strong>{" "}
+              The next-token distribution at position <M>t</M> has
+              entropy{" "}
+              <M>{tex`H_{t} = H(p_{\theta}(\cdot \mid x_{<t}))`}</M>.
+              Show that the average per-token cross-entropy of the
+              model on a corpus is bounded below by the average{" "}
+              <M>{tex`H_{t}`}</M>: a model that perfectly fits the
+              data cannot have loss smaller than the data&apos;s own
+              entropy. (This is the &ldquo;irreducible loss&rdquo;
+              floor in scaling laws.) When does equality hold?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a):{" "}
+            <M>{tex`H(\mathbf{p}) = \mathbb{E}_{\mathbf{p}}[-\log p(X)]`}</M>{" "}
+            and Jensen on{" "}
+            <M>{tex`-\log`}</M> with random variable{" "}
+            <M>{tex`1/p(X)`}</M>. For (b): write <M>H</M> as a sum
+            of terms{" "}
+            <M>{tex`-p_i \log p_i`}</M>, each of which is
+            concave in <M>{tex`p_i`}</M>. For (c):
+            <M>{tex`H(P, Q) = H(P) + \mathrm{KL}(P \| Q) \ge H(P)`}</M>.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong>{" "}
+              <M>{tex`H(\mathbf{p}) = \sum_{i} p_{i} \log(1/p_{i}) = \mathbb{E}_{i \sim \mathbf{p}}[\log(1/p_{i})]`}</M>.
+              Apply Jensen to the concave function{" "}
+              <M>{tex`\log`}</M>: <M>{tex`\mathbb{E}[\log Y] \le \log \mathbb{E}[Y]`}</M>.
+              With <M>{tex`Y = 1/p_{i}`}</M>:{" "}
+              <M>{tex`\mathbb{E}[Y] = \sum_{i} p_{i}/p_{i} = K`}</M>.
+              So <M>{tex`H(\mathbf{p}) \le \log K`}</M>, with
+              equality iff <M>Y</M> is constant, i.e.{" "}
+              <M>{tex`p_{i} = 1/K`}</M> for all <M>i</M> — uniform.
+            </p>
+            <p>
+              <strong>(b)</strong> The function{" "}
+              <M>{tex`f(p) = -p \log p`}</M> is concave on{" "}
+              <M>{tex`[0, 1]`}</M> (its second derivative is{" "}
+              <M>{tex`-1/p < 0`}</M>). The entropy{" "}
+              <M>{tex`H(\mathbf{p}) = \sum_{i} f(p_{i})`}</M> is a
+              sum of concave functions of the linear coordinates{" "}
+              <M>{tex`p_{i}`}</M>, hence concave. Concretely:
+              <Block>{tex`H(\lambda \mathbf{p} + (1-\lambda) \mathbf{q}) = \sum_{i} f(\lambda p_{i} + (1-\lambda) q_{i}) \ge \lambda \sum_{i} f(p_{i}) + (1-\lambda) \sum_{i} f(q_{i}) = \lambda H(\mathbf{p}) + (1-\lambda) H(\mathbf{q}).`}</Block>
+              Operational reading: mixing two distributions
+              (the operational meaning of a coin-flipped sample
+              from one or the other) increases uncertainty about the
+              outcome at least as much as the
+              probability-weighted average of the original
+              uncertainties — you have added the &ldquo;which
+              source?&rdquo; question on top.
+            </p>
+            <p>
+              <strong>(c)</strong> The model&apos;s per-token loss
+              is the cross-entropy{" "}
+              <M>{tex`H(P_{t}, Q_{\theta, t})`}</M>, where{" "}
+              <M>{tex`P_{t}`}</M> is the true distribution over the
+              next token given context and{" "}
+              <M>{tex`Q_{\theta, t}`}</M> is the model&apos;s. By the
+              decomposition
+              <Block>{tex`H(P, Q) = H(P) + \mathrm{KL}(P \,\|\, Q),`}</Block>
+              and KL ≥ 0, we have{" "}
+              <M>{tex`H(P_{t}, Q_{\theta, t}) \ge H(P_{t})`}</M>.
+              Averaging over <M>t</M> and over the data:
+              <Block>{tex`\mathcal{L}(\theta) = \mathbb{E}_{t}[H(P_{t}, Q_{\theta, t})] \ge \mathbb{E}_{t}[H(P_{t})] = H_{\text{data}}.`}</Block>
+              So the loss has a hard floor equal to the corpus&apos;s
+              own entropy <M>{tex`H_{\text{data}}`}</M>: even a
+              perfect model cannot do better, because the data
+              itself is genuinely random. Equality holds when{" "}
+              <M>{tex`Q_{\theta, t} = P_{t}`}</M> for every context
+              — the optimal model. This irreducible floor is what
+              scaling laws estimate when they fit{" "}
+              <M>{tex`\mathcal{L}(N, D) = \mathcal{L}_{\infty} + A/N^{\alpha} + B/D^{\beta}`}</M>{" "}
+              and report the constant{" "}
+              <M>{tex`\mathcal{L}_{\infty}`}</M>: it is an estimate
+              of <M>{tex`H_{\text{data}}`}</M> on the training
+              distribution.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );

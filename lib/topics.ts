@@ -215,6 +215,51 @@ export const probabilityChapters: Chapter[] = [
   },
 ];
 
+export const neuralNetworksChapters: Chapter[] = [
+  {
+    slug: "neuron",
+    title: "The neuron",
+    blurb:
+      "Weights, bias, activation. The smallest unit a network can be made of — and the only one whose pieces all have names.",
+  },
+  {
+    slug: "linear-layer",
+    title: "Linear layers",
+    blurb:
+      "A whole layer is one matrix multiplication and one bias add. The matrix is what the layer learns.",
+  },
+  {
+    slug: "nonlinearities",
+    title: "Nonlinearities",
+    blurb:
+      "ReLU, GELU, sigmoid, tanh — what they look like, what they buy you, and why a stack of linear layers without them is just one linear layer.",
+  },
+  {
+    slug: "embeddings",
+    title: "Embeddings & one-hot vectors",
+    blurb:
+      "Discrete tokens become continuous vectors. Same row of a matrix every time the same token shows up.",
+  },
+  {
+    slug: "mlp",
+    title: "The MLP — the workhorse block",
+    blurb:
+      "Two linear layers and a nonlinearity. The thing every transformer block does after attention, and a universal function approximator on its own.",
+  },
+  {
+    slug: "layernorm-residual",
+    title: "Layer normalization & residual connections",
+    blurb:
+      "Two architectural tricks that make deep networks trainable. One rescales activations, the other adds a highway around every block.",
+  },
+  {
+    slug: "mech-interp-bridge",
+    title: "Capstone: neural networks in mech interp",
+    blurb:
+      "Feature directions, polysemanticity, MLPs as key-value memory, and the residual stream as a shared communication bus.",
+  },
+];
+
 export const modules: Module[] = [
   {
     slug: "linear-algebra",
@@ -243,9 +288,10 @@ export const modules: Module[] = [
   {
     slug: "neural-networks",
     title: "Neural Networks",
-    status: "soon",
+    status: "available",
     blurb:
-      "Linear layers, nonlinearities, and the forward pass from first principles.",
+      "Linear layers, nonlinearities, embeddings, and the forward pass from first principles.",
+    chapters: neuralNetworksChapters,
   },
   {
     slug: "transformers",

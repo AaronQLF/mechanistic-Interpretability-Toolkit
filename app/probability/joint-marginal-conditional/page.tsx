@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Quiz } from "@/components/content/Quiz";
 import { Block, M } from "@/components/math/Math";
@@ -139,6 +140,121 @@ export default function JointMarginalConditionalPage() {
               "That's the average, which has nothing to do with probability of a conjunction.",
           },
         ]}
+      />
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              Let <M>{tex`X_{1}, X_{2}, \ldots, X_{T}`}</M> be the
+              tokens of a sequence drawn from a joint distribution{" "}
+              <M>{tex`p(x_{1}, \ldots, x_{T})`}</M> over a vocabulary{" "}
+              <M>V</M>.
+            </p>
+            <p>
+              <strong>(a)</strong> Prove the{" "}
+              <strong>chain rule of probability</strong>{" "}
+              by induction on <M>T</M>:
+              <Block>{tex`p(x_{1}, x_{2}, \ldots, x_{T}) = \prod_{t=1}^{T} p(x_{t} \mid x_{1}, \ldots, x_{t-1}).`}</Block>
+              Where in the proof do you use the definition of
+              conditional probability, and where do you need to know
+              that <M>{tex`p(x_{1}, \ldots, x_{t-1}) > 0`}</M>?
+            </p>
+            <p>
+              <strong>(b)</strong> An autoregressive language model
+              is exactly a parametric family{" "}
+              <M>{tex`p_{\theta}(x_{t} \mid x_{<t})`}</M> for the
+              right-hand factors. Show that the
+              <strong>per-token cross-entropy loss</strong>
+              <Block>{tex`\mathcal{L}(\theta) = -\frac{1}{T} \sum_{t=1}^{T} \log p_{\theta}(x_{t} \mid x_{<t}),`}</Block>
+              is exactly{" "}
+              <M>{tex`-\frac{1}{T}\log p_{\theta}(x_{1}, \ldots, x_{T})`}</M>{" "}
+              — the joint negative log-likelihood per token. So
+              minimizing per-token loss <em>is</em> maximizing the
+              joint likelihood; they are not two separate things.
+            </p>
+            <p>
+              <strong>(c)</strong> A different factorization, the{" "}
+              <em>masked language model</em> objective (BERT), trains{" "}
+              <M>{tex`p_{\theta}(x_{t} \mid x_{1}, \ldots, x_{t-1}, x_{t+1}, \ldots, x_{T})`}</M>{" "}
+              — conditioning on{" "}
+              <em>both</em> sides. Argue that there is{" "}
+              <em>no</em> chain-rule decomposition that turns these
+              individual conditionals into the joint{" "}
+              <M>{tex`p(x_{1}, \ldots, x_{T})`}</M>. Why does this
+              mean a BERT-style model cannot be used to score
+              sequences in the same way as an autoregressive one?
+            </p>
+          </>
+        }
+        hint={
+          <>
+            For (a): the base case is{" "}
+            <M>{tex`p(x_{1}, x_{2}) = p(x_{2} \mid x_{1}) p(x_{1})`}</M>{" "}
+            from the conditional definition. For (b): take the log
+            of (a) and divide by <M>T</M>. For (c): the BERT
+            conditionals are over a single variable given everything
+            else; there&apos;s no &ldquo;ordering&rdquo; that turns
+            their product into the joint.
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a)</strong> Base case <M>{tex`T = 2`}</M>: by
+              definition of conditional probability,{" "}
+              <M>{tex`p(x_{2} \mid x_{1}) = p(x_{1}, x_{2})/p(x_{1})`}</M>,
+              so{" "}
+              <M>{tex`p(x_{1}, x_{2}) = p(x_{2} \mid x_{1}) p(x_{1})`}</M>.
+              Inductive step: assume{" "}
+              <M>{tex`p(x_{1}, \ldots, x_{T-1}) = \prod_{t \le T-1} p(x_{t} \mid x_{<t})`}</M>{" "}
+              and apply the same definition to{" "}
+              <M>{tex`p(x_{T} \mid x_{1}, \ldots, x_{T-1}) = p(x_{1}, \ldots, x_{T})/p(x_{1}, \ldots, x_{T-1})`}</M>.
+              Multiply both sides by the denominator. The
+              positivity hypothesis is needed to make every
+              conditional well-defined; in practice we use the
+              convention that any factor whose conditioning set has
+              probability zero is omitted (the corresponding outcome
+              is impossible anyway).
+            </p>
+            <p>
+              <strong>(b)</strong> Take the log of the chain rule:{" "}
+              <M>{tex`\log p(x_{1}, \ldots, x_{T}) = \sum_{t} \log p(x_{t} \mid x_{<t})`}</M>.
+              Divide by <M>T</M> and negate:{" "}
+              <M>{tex`-\frac{1}{T} \log p_{\theta}(x_{1}, \ldots, x_{T}) = -\frac{1}{T} \sum_{t} \log p_{\theta}(x_{t} \mid x_{<t}) = \mathcal{L}(\theta)`}</M>.
+              So the per-token cross-entropy loss is the joint
+              negative log-likelihood per token. Minimizing
+              one minimizes the other; there is no
+              &ldquo;teacher-forcing vs. joint&rdquo; tradeoff at
+              this level.
+            </p>
+            <p>
+              <strong>(c)</strong> The BERT conditionals look like{" "}
+              <M>{tex`p(x_{t} \mid x_{\setminus t})`}</M> — one
+              variable given <em>all</em> the others. There is no
+              chain rule that factors a joint{" "}
+              <M>{tex`p(x_{1}, \ldots, x_{T})`}</M> as a product of
+              such conditionals: each conditional &ldquo;peeks at
+              the future,&rdquo; and the joint cannot be built up
+              one variable at a time. (Formally these are the
+              &ldquo;full conditionals&rdquo; from the
+              Hammersley&ndash;Clifford literature; in the discrete
+              setting they over-determine the joint, and a
+              consistent joint exists only when the conditionals
+              satisfy compatibility constraints — which BERT&apos;s
+              <em>do not</em>, in general.) Practically: a BERT
+              model can fill in a single masked token by sampling
+              from <M>{tex`p_{\theta}(x_{t} \mid x_{\setminus t})`}</M>,
+              but it cannot output a coherent sequence
+              probability; you cannot just multiply its conditionals
+              together and get a meaningful{" "}
+              <M>{tex`p_{\theta}(x_{1}, \ldots, x_{T})`}</M>. That
+              is the principled reason language modeling is
+              autoregressive while pretraining for representations
+              can be masked.
+            </p>
+          </>
+        }
       />
     </ChapterShell>
   );
