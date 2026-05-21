@@ -2,10 +2,11 @@ import Link from "next/link";
 import { CurriculumMap } from "@/components/ui/CurriculumMap";
 import {
   calculusChapters,
+  circuitsChapters,
   linearAlgebraChapters,
-  modules,
   neuralNetworksChapters,
   probabilityChapters,
+  transformersChapters,
 } from "@/lib/topics";
 
 export default function HomePage() {
@@ -45,17 +46,19 @@ export default function HomePage() {
             </Link>
           </div>
           <dl className="mt-10 grid grid-cols-3 gap-6 text-sm">
-            <Stat label="Modules live" value="4 / 6" />
+            <Stat label="Modules live" value="6 / 6" />
             <Stat
               label="Chapters"
               value={String(
                 linearAlgebraChapters.length +
                   probabilityChapters.length +
                   calculusChapters.length +
-                  neuralNetworksChapters.length
+                  neuralNetworksChapters.length +
+                  transformersChapters.length +
+                  circuitsChapters.length
               )}
             />
-            <Stat label="Interactive widgets" value="40+" />
+            <Stat label="Interactive widgets" value="50+" />
           </dl>
         </div>
 
@@ -64,9 +67,9 @@ export default function HomePage() {
             Curriculum map
           </h2>
           <p className="mt-1 font-serif text-sm text-ink-muted">
-            Linear Algebra, Probability, Calculus, and Neural Networks
-            are live today. The rest is on its way — same voice, same
-            feel.
+            All six modules are live: Linear Algebra, Probability,
+            Calculus, Neural Networks, Transformers, and the
+            Mech-interp Circuits capstone.
           </p>
           <div className="mt-4">
             <CurriculumMap />
@@ -231,33 +234,80 @@ export default function HomePage() {
       </section>
 
       <section className="mt-20">
-        <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          On the way
-        </p>
-        <h2 className="mt-2 font-sans text-3xl font-semibold tracking-tight text-ink">
-          The full curriculum
-        </h2>
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Just shipped
+            </p>
+            <h2 className="mt-2 font-sans text-3xl font-semibold tracking-tight text-ink">
+              Transformers — attention, residual streams, and the QK/OV factorization
+            </h2>
+          </div>
+          <Link
+            href="/transformers"
+            className="hidden font-sans text-sm font-medium text-ink-muted transition hover:text-accent sm:inline"
+          >
+            See all chapters →
+          </Link>
+        </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {modules
-            .filter((m) => m.status === "soon")
-            .map((m) => (
-              <Link
-                key={m.slug}
-                href={`/${m.slug}`}
-                className="group block rounded-lg border border-dashed border-line bg-paper p-4 transition hover:border-ink-muted"
-              >
-                <div className="flex items-center gap-2 font-mono text-xs text-ink-subtle">
-                  <span>SOON</span>
-                  <span className="h-px flex-1 bg-line" />
-                </div>
-                <h3 className="mt-2 font-sans text-base font-semibold text-ink group-hover:text-accent">
-                  {m.title}
-                </h3>
-                <p className="mt-1 font-serif text-sm leading-relaxed text-ink-muted">
-                  {m.blurb}
-                </p>
-              </Link>
-            ))}
+          {transformersChapters.slice(0, 6).map((c, i) => (
+            <Link
+              key={c.slug}
+              href={`/transformers/${c.slug}`}
+              className="group block rounded-lg border border-line bg-paper-raised p-4 transition hover:border-ink-muted"
+            >
+              <div className="flex items-center gap-2 font-mono text-xs text-ink-subtle">
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <span className="h-px flex-1 bg-line" />
+              </div>
+              <h3 className="mt-2 font-sans text-base font-semibold text-ink group-hover:text-accent">
+                {c.title}
+              </h3>
+              <p className="mt-1 font-serif text-sm leading-relaxed text-ink-muted">
+                {c.blurb}
+              </p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-20">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              The capstone
+            </p>
+            <h2 className="mt-2 font-sans text-3xl font-semibold tracking-tight text-ink">
+              Mech-interp circuits — induction heads, IOI, patching, and SAEs
+            </h2>
+          </div>
+          <Link
+            href="/circuits"
+            className="hidden font-sans text-sm font-medium text-ink-muted transition hover:text-accent sm:inline"
+          >
+            See all chapters →
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {circuitsChapters.slice(0, 6).map((c, i) => (
+            <Link
+              key={c.slug}
+              href={`/circuits/${c.slug}`}
+              className="group block rounded-lg border border-line bg-paper-raised p-4 transition hover:border-ink-muted"
+            >
+              <div className="flex items-center gap-2 font-mono text-xs text-ink-subtle">
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <span className="h-px flex-1 bg-line" />
+              </div>
+              <h3 className="mt-2 font-sans text-base font-semibold text-ink group-hover:text-accent">
+                {c.title}
+              </h3>
+              <p className="mt-1 font-serif text-sm leading-relaxed text-ink-muted">
+                {c.blurb}
+              </p>
+            </Link>
+          ))}
         </div>
       </section>
 

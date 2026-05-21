@@ -260,6 +260,96 @@ export const neuralNetworksChapters: Chapter[] = [
   },
 ];
 
+export const transformersChapters: Chapter[] = [
+  {
+    slug: "attention",
+    title: "Self-attention",
+    blurb:
+      "Queries, keys, values, and a softmax over similarity scores — the operation the entire architecture is named after.",
+  },
+  {
+    slug: "multi-head",
+    title: "Multi-head attention",
+    blurb:
+      "Run several small attentions in parallel, concatenate, project. Each head gets its own subspace — and tends to specialize.",
+  },
+  {
+    slug: "qk-ov",
+    title: "QK and OV circuits",
+    blurb:
+      "The Anthropic factorization: every head is an attention pattern (QK) and a value-write (OV). Once you see it, you can never unsee it.",
+  },
+  {
+    slug: "positional-encoding",
+    title: "Positional encodings",
+    blurb:
+      "Attention is permutation-equivariant by default. Sinusoidal, learned, RoPE, and ALiBi: four ways to put position back in.",
+  },
+  {
+    slug: "the-block",
+    title: "The transformer block",
+    blurb:
+      "Pre-norm, attention, residual, MLP, residual. Six lines of pseudocode that everything else hangs from.",
+  },
+  {
+    slug: "gpt-architecture",
+    title: "Stacking blocks: a GPT",
+    blurb:
+      "From a single block to a decoder-only language model. Embeddings, causal masking, unembedding, and autoregressive sampling.",
+  },
+  {
+    slug: "mech-interp-bridge",
+    title: "Capstone: transformers in mech interp",
+    blurb:
+      "The residual stream as a privileged basis, attention heads as program calls, and the lens through which every circuits paper is written.",
+  },
+];
+
+export const circuitsChapters: Chapter[] = [
+  {
+    slug: "what-is-a-circuit",
+    title: "What is a circuit?",
+    blurb:
+      "A circuit is a small, named subgraph of a model that implements a specific behavior. Components, edges, paths — and what counts as 'an explanation.'",
+  },
+  {
+    slug: "induction-heads",
+    title: "Induction heads",
+    blurb:
+      "Two heads, one job: copy what came after the last time you saw this token. The mechanism behind in-context learning, in glorious detail.",
+  },
+  {
+    slug: "ioi",
+    title: "Indirect Object Identification",
+    blurb:
+      "The first end-to-end mech-interp result on GPT-2 small: 26 heads, four roles, and a clean explanation for who Mary gives the ball to.",
+  },
+  {
+    slug: "activation-patching",
+    title: "Activation patching",
+    blurb:
+      "The causal-intervention hammer. Swap a piece of one forward pass into another, measure the damage, attribute the behavior.",
+  },
+  {
+    slug: "sparse-autoencoders",
+    title: "Sparse autoencoders",
+    blurb:
+      "Decompose a polysemantic activation into a much wider, sparser code. The bet that monosemantic features exist — and how to find them.",
+  },
+  {
+    slug: "circuit-diagrams",
+    title: "Reading circuit diagrams",
+    blurb:
+      "How to draw the picture an electrical engineer would draw — and how to read one fluently when a paper hands you sixty arrows.",
+  },
+  {
+    slug: "mech-interp-bridge",
+    title: "Capstone: the state of the field",
+    blurb:
+      "What we can explain, what we can't, and the open problems that still gate a real science of neural networks.",
+  },
+];
+
 export const modules: Module[] = [
   {
     slug: "linear-algebra",
@@ -296,16 +386,18 @@ export const modules: Module[] = [
   {
     slug: "transformers",
     title: "Transformers",
-    status: "soon",
+    status: "available",
     blurb:
       "Attention, residual streams, and the architecture that ate NLP.",
+    chapters: transformersChapters,
   },
   {
     slug: "circuits",
     title: "Mech-interp Circuits",
-    status: "soon",
+    status: "available",
     blurb:
       "Induction heads, sparse autoencoders, and the search for human-readable computation.",
+    chapters: circuitsChapters,
   },
 ];
 

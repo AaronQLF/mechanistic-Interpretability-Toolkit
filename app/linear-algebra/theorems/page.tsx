@@ -1,5 +1,6 @@
 import { ChapterShell } from "@/components/content/ChapterShell";
 import { Callout } from "@/components/content/Callout";
+import { Challenge } from "@/components/content/Challenge";
 import { Figure } from "@/components/content/Figure";
 import { Theorem } from "@/components/content/Theorem";
 import { Block, M } from "@/components/math/Math";
@@ -761,6 +762,209 @@ export default function TheoremsPage() {
         graduate textbook and in the references; come back here once
         you&apos;ve seen them.
       </Callout>
+
+      <Challenge
+        prompt={
+          <>
+            <p>
+              <strong>Stitching the toolkit together.</strong> Four parts;
+              each one uses a theorem from this chapter, and the last
+              connects everything to a mech-interp concern.
+            </p>
+            <p>
+              <strong>(a) Frobenius = sum of squared singular values.</strong>{" "}
+              For any <M>{tex`A \in \mathbb{R}^{m \times n}`}</M>, show
+            </p>
+            <Block>{tex`\|A\|_F^2 \;=\; \operatorname{tr}(A^\top A) \;=\; \sum_{i=1}^{r} \sigma_i(A)^2,`}</Block>
+            <p>
+              where <M>{tex`\sigma_i`}</M> are the singular values. Then use
+              this — plus the unitary invariance of{" "}
+              <M>{tex`\|\cdot\|_F`}</M> — to prove the Frobenius half of
+              Eckart–Young (Theorem 12): the best rank-<M>k</M>{" "}
+              approximation to <M>A</M> is{" "}
+              <M>{tex`A_k = \sum_{i=1}^{k} \sigma_i \mathbf{u}_i \mathbf{v}_i^\top`}</M>,
+              with optimal error{" "}
+              <M>{tex`\|A - A_k\|_F = \sqrt{\sigma_{k+1}^2 + \cdots + \sigma_r^2}`}</M>.
+            </p>
+            <p>
+              <strong>(b) Sylvester for low-rank updates (the &ldquo;LoRA
+              determinant&rdquo;).</strong> Let{" "}
+              <M>{tex`A \in \mathbb{R}^{n \times n}`}</M> be invertible
+              and let <M>{tex`U, V \in \mathbb{R}^{n \times r}`}</M> with{" "}
+              <M>{tex`r \ll n`}</M>. Prove
+            </p>
+            <Block>{tex`\det(A + U V^\top) \;=\; \det(A)\,\det\!\bigl(I_r + V^\top A^{-1} U\bigr).`}</Block>
+            <p>
+              Why this matters: a rank-<M>r</M> LoRA patch on a weight
+              matrix changes the matrix&apos;s volume scaling by a factor
+              you can compute by inverting a single{" "}
+              <M>{tex`r \times r`}</M> matrix, no matter how huge{" "}
+              <M>n</M> is.
+            </p>
+            <p>
+              <strong>(c) The spectral cliff.</strong> Let{" "}
+              <M>{tex`A \in \mathbb{R}^{n \times n}`}</M> be symmetric with
+              eigenvalues ordered by magnitude:{" "}
+              <M>{tex`|\lambda_1| \ge |\lambda_2| \ge \cdots \ge |\lambda_n|`}</M>.
+              For any matrix <M>B</M> of rank <M>{tex`\le k`}</M> (not
+              necessarily symmetric), show
+            </p>
+            <Block>{tex`\|A - B\|_2 \;\ge\; |\lambda_{k+1}|.`}</Block>
+            <p>
+              <strong>(d) Cash it in.</strong> In one or two sentences
+              each, explain (i) why a rank-<M>k</M> linear probe on a
+              symmetric activation-covariance matrix{" "}
+              <M>{tex`X^\top X`}</M> can never resolve a feature direction
+              with variance smaller than the <M>{tex`(k{+}1)`}</M>-th
+              eigenvalue, and (ii) why <em>combining</em> parts (a) and
+              (c) tells you that the &ldquo;total leftover variance&rdquo;
+              after a rank-<M>k</M> approximation of{" "}
+              <M>{tex`X^\top X`}</M> is exactly{" "}
+              <M>{tex`\sum_{i>k} \lambda_i`}</M> — the quantity PCA
+              reports as &ldquo;variance explained by the discarded
+              components.&rdquo;
+            </p>
+          </>
+        }
+        hint={
+          <>
+            <p>
+              For (a): start by expanding{" "}
+              <M>{tex`A^\top A = V \Sigma^\top U^\top U \Sigma V^\top`}</M>,
+              cancel <M>{tex`U^\top U = I`}</M>, then apply the cyclic
+              trace (Theorem 7). For the Eckart–Young half, rotate by
+              orthogonal factors on each side and reduce the problem to
+              approximating a diagonal{" "}
+              <M>{tex`\Sigma`}</M>.
+            </p>
+            <p>
+              For (b): factor <M>A</M> out, so the determinant becomes{" "}
+              <M>{tex`\det(A)\,\det(I_n + (A^{-1} U) V^\top)`}</M>, then
+              Sylvester (Theorem 8) swaps the two factors inside the
+              identity.
+            </p>
+            <p>
+              For (c): diagonalise <M>{tex`A = Q \Lambda Q^\top`}</M> by
+              the spectral theorem (Theorem 10) and use unitary
+              invariance of the spectral norm to reduce to a diagonal
+              matrix; then apply the spectral half of Eckart–Young.
+            </p>
+          </>
+        }
+        solution={
+          <>
+            <p>
+              <strong>(a) Frobenius identity.</strong> By definition{" "}
+              <M>{tex`\|A\|_F^2 = \sum_{ij} A_{ij}^2`}</M>, and{" "}
+              <M>{tex`(A^\top A)_{jj} = \sum_i A_{ij}^2`}</M>, so summing
+              over <M>j</M> gives{" "}
+              <M>{tex`\|A\|_F^2 = \operatorname{tr}(A^\top A)`}</M>. Now
+              substitute the SVD <M>{tex`A = U \Sigma V^\top`}</M>:
+            </p>
+            <Block>{tex`A^\top A = V\, \Sigma^\top U^\top U\, \Sigma V^\top = V\,(\Sigma^\top \Sigma)\, V^\top,`}</Block>
+            <p>
+              using <M>{tex`U^\top U = I`}</M>. By cyclic trace (Theorem
+              7),
+            </p>
+            <Block>{tex`\operatorname{tr}(V (\Sigma^\top \Sigma) V^\top) = \operatorname{tr}\bigl((\Sigma^\top \Sigma) V^\top V\bigr) = \operatorname{tr}(\Sigma^\top \Sigma) = \sum_{i} \sigma_i^2.`}</Block>
+            <p>
+              <strong>Eckart–Young (Frobenius).</strong> The Frobenius
+              norm is unitarily invariant:{" "}
+              <M>{tex`\|U^\top M V\|_F = \|M\|_F`}</M> for orthogonal{" "}
+              <M>U, V</M>. Apply this with the SVD factors of <M>A</M>:
+              for any matrix <M>B</M>,
+            </p>
+            <Block>{tex`\|A - B\|_F^2 = \|U^\top(A - B)V\|_F^2 = \|\Sigma - \tilde B\|_F^2, \quad \tilde B = U^\top B V.`}</Block>
+            <p>
+              <M>{tex`\tilde B`}</M> has the same rank as <M>B</M>. Since{" "}
+              <M>{tex`\Sigma`}</M> is diagonal with entries{" "}
+              <M>{tex`\sigma_1 \ge \cdots \ge \sigma_r > 0`}</M>, the
+              rank-<M>k</M> matrix closest to it in Frobenius norm is{" "}
+              <M>{tex`\Sigma_k = \operatorname{diag}(\sigma_1, \dots, \sigma_k, 0, \dots, 0)`}</M>{" "}
+              (any other rank-<M>k</M> diagonal would either miss a top
+              entry, costing at least <M>{tex`\sigma_k^2`}</M>, or
+              spread mass off the diagonal, which only increases the
+              error). The error is{" "}
+              <M>{tex`\sigma_{k+1}^2 + \cdots + \sigma_r^2`}</M>.
+              Rotating back, <M>{tex`A_k = U \Sigma_k V^\top`}</M> is
+              the optimum, as claimed.
+            </p>
+            <p>
+              <strong>(b) LoRA determinant.</strong> Since <M>A</M> is
+              invertible,
+            </p>
+            <Block>{tex`A + U V^\top = A\bigl(I_n + A^{-1} U V^\top\bigr),`}</Block>
+            <p>
+              so by multiplicativity (Theorem 6),{" "}
+              <M>{tex`\det(A + U V^\top) = \det(A)\,\det(I_n + (A^{-1} U) V^\top)`}</M>.
+              Apply Sylvester&apos;s identity (Theorem 8) with{" "}
+              <M>{tex`\tilde A = A^{-1} U \in \mathbb{R}^{n \times r}`}</M>{" "}
+              and <M>{tex`\tilde B = V^\top \in \mathbb{R}^{r \times n}`}</M>:
+            </p>
+            <Block>{tex`\det(I_n + \tilde A \tilde B) = \det(I_r + \tilde B \tilde A) = \det(I_r + V^\top A^{-1} U).`}</Block>
+            <p>
+              Combining,{" "}
+              <M>{tex`\det(A + U V^\top) = \det(A)\,\det(I_r + V^\top A^{-1} U)`}</M>.
+              The right-hand determinant is computed on an{" "}
+              <M>{tex`r \times r`}</M> matrix —{" "}
+              <M>{tex`O(r^3)`}</M> work to evaluate, regardless of{" "}
+              <M>n</M>.
+            </p>
+            <p>
+              <strong>(c) The spectral cliff.</strong> By the spectral
+              theorem (Theorem 10),{" "}
+              <M>{tex`A = Q \Lambda Q^\top`}</M> with <M>Q</M> orthogonal
+              and{" "}
+              <M>{tex`\Lambda = \operatorname{diag}(\lambda_1, \dots, \lambda_n)`}</M>{" "}
+              (real eigenvalues). The spectral norm is unitarily
+              invariant, so for any <M>B</M> of rank <M>{tex`\le k`}</M>,
+            </p>
+            <Block>{tex`\|A - B\|_2 = \|Q^\top (A - B) Q\|_2 = \|\Lambda - \tilde B\|_2, \quad \tilde B = Q^\top B Q,`}</Block>
+            <p>
+              with <M>{tex`\operatorname{rank}(\tilde B) \le k`}</M>.
+              <M>{tex`\Lambda`}</M> is diagonal, so its singular values
+              are <M>{tex`|\lambda_i|`}</M>, ordered as{" "}
+              <M>{tex`|\lambda_1| \ge \cdots \ge |\lambda_n|`}</M> by
+              assumption. The spectral half of Eckart–Young (Theorem 12)
+              says any rank-<M>k</M> approximation of{" "}
+              <M>{tex`\Lambda`}</M> incurs spectral-norm error at least{" "}
+              <M>{tex`\sigma_{k+1}(\Lambda) = |\lambda_{k+1}|`}</M>, so{" "}
+              <M>{tex`\|A - B\|_2 \ge |\lambda_{k+1}|`}</M>.
+            </p>
+            <p>
+              <strong>(d) Mech-interp consequence.</strong>
+            </p>
+            <p>
+              <em>(i) Spectral cliff for probes.</em> An activation
+              covariance{" "}
+              <M>{tex`X^\top X`}</M> is symmetric positive semi-definite,
+              so its eigenvalues are non-negative variances. A rank-<M>k</M>{" "}
+              linear probe approximates it by a rank-<M>k</M> matrix{" "}
+              <M>B</M>; by part (c), the remaining error in spectral norm
+              is at least <M>{tex`\lambda_{k+1}`}</M>. Any feature
+              direction with variance below that floor lives in the
+              residual; the probe is structurally blind to it. This is
+              why &ldquo;use the top-<M>k</M> principal components&rdquo;
+              works only when there is a clean spectral gap.
+            </p>
+            <p>
+              <em>(ii) Variance explained.</em> Part (a) says{" "}
+              <M>{tex`\|X^\top X - (X^\top X)_k\|_F^2 = \sum_{i > k} \lambda_i^2`}</M>{" "}
+              (since for a symmetric PSD matrix singular values equal
+              eigenvalues). Meanwhile the {" "}
+              <em>trace</em> of <M>{tex`X^\top X`}</M> is{" "}
+              <M>{tex`\sum_i \lambda_i`}</M> (Theorem 7 + Cayley–Hamilton
+              corollary), and the trace of its top-<M>k</M>{" "}
+              approximation is{" "}
+              <M>{tex`\sum_{i \le k} \lambda_i`}</M>. The
+              &ldquo;variance discarded&rdquo; — the quantity PCA reports
+              as <em>unexplained variance</em> — is exactly{" "}
+              <M>{tex`\sum_{i > k} \lambda_i`}</M>, which is what
+              eigen-decomposing the covariance buys you for free.
+            </p>
+          </>
+        }
+      />
     </ChapterShell>
   );
 }
