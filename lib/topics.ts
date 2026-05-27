@@ -337,6 +337,12 @@ export const circuitsChapters: Chapter[] = [
       "Decompose a polysemantic activation into a much wider, sparser code. The bet that monosemantic features exist — and how to find them.",
   },
   {
+    slug: "hands-on",
+    title: "Hands on: training your own SAE",
+    blurb:
+      "From an empty repo to a trained, audited dictionary: hardware, hooks, training loop, evaluation, and the causal-validation work I'm building for my MILA thesis.",
+  },
+  {
     slug: "circuit-diagrams",
     title: "Reading circuit diagrams",
     blurb:

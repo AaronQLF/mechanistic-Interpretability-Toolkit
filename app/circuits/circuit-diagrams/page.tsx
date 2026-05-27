@@ -14,7 +14,7 @@ export default function CircuitDiagramsPage() {
     <ChapterShell
       moduleSlug="circuits"
       chapterSlug="circuit-diagrams"
-      eyebrow="Chapter 06"
+      eyebrow="Chapter 07"
       title="Reading circuit diagrams"
       lede="Every mech-interp paper produces, sooner or later, a diagram. Boxes for components, arrows for residual-stream paths, labels for what each component is doing. This chapter is a short field guide to drawing them and, more importantly, reading them critically &mdash; including spotting where the diagram is hiding ambiguity."
     >

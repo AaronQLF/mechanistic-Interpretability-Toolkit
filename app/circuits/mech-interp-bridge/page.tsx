@@ -13,7 +13,7 @@ export default function CircuitsBridgePage() {
       chapterSlug="mech-interp-bridge"
       eyebrow="Capstone"
       title="Capstone: the state of the field"
-      lede="Six chapters of circuits, methods, and worked examples. This one is the honest accounting: what the field can explain in 2026, what it can&apos;t, and which of the open problems matter most for whether mech interp ever turns into a real science of neural networks."
+      lede="Seven chapters of circuits, methods, and worked examples. This one is the honest accounting: what the field can explain in 2026, what it can&apos;t, and which of the open problems matter most for whether mech interp ever turns into a real science of neural networks."
     >
       <h2>What we can explain</h2>
       <p>

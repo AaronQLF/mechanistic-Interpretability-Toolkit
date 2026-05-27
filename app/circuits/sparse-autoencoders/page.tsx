@@ -150,6 +150,143 @@ export default function SparseAutoencodersPage() {
         characterize) is a known failure mode.
       </p>
 
+      <h2>Advanced: training one on a small model</h2>
+      <p>
+        The smallest serious SAE project is not &ldquo;train on a
+        frontier model.&rdquo; It is: pick one activation site in a
+        small open-weight transformer, cache a few million
+        activations, train one dictionary, and audit whether the
+        learned atoms are readable. GPT-2 small, TinyStories-33M,
+        or Pythia-70M are large enough to have real features but
+        small enough that a laptop or single consumer GPU can run
+        the full loop.
+      </p>
+      <p>
+        The object you train on is a matrix{" "}
+        <M>{tex`X \in \mathbb{R}^{N \times d}`}</M>, where each row
+        is one activation vector from one token position. For a
+        residual-stream SAE on GPT-2 small, <M>{tex`d = 768`}</M>.
+        A typical beginner dictionary might use{" "}
+        <M>{tex`m = 16d = 12288`}</M> atoms; that is wide enough to
+        test superposition without making every engineering problem
+        about scale.
+      </p>
+      <ol>
+        <li>
+          <strong>Choose one site, not the whole model.</strong>{" "}
+          Start with <M>{tex`\mathrm{resid\_post}`}</M> after a
+          middle layer, or the output of one MLP block. Middle
+          residual streams usually produce more interpretable
+          beginner results than very early layers, where features
+          are lexical, or very late layers, where features are
+          close to logits.
+        </li>
+        <li>
+          <strong>Build the activation dataset.</strong> Sample text
+          from the same distribution the model understands:
+          OpenWebText-style text for GPT-2, TinyStories for a
+          TinyStories model, code for a code model. Run the model
+          with hooks, save the chosen activation at every
+          non-padding token, and shuffle by token rather than by
+          document so each minibatch is diverse.
+        </li>
+        <li>
+          <strong>Normalize before training.</strong> Subtract the
+          activation mean <M>{tex`\mu`}</M> and divide by the
+          average norm or per-dimension standard deviation. The SAE
+          should learn feature directions, not waste capacity on
+          the global mean activation. Add the mean back only when
+          re-inserting reconstructions into the model.
+        </li>
+        <li>
+          <strong>Use a tied geometric convention.</strong> Treat
+          decoder rows or columns as the dictionary atoms, then
+          keep each atom unit-norm after optimizer steps. Without
+          this, the encoder can shrink while the decoder grows (or
+          vice versa), changing the L1 penalty without changing the
+          reconstruction.
+        </li>
+        <li>
+          <strong>Train with reconstruction plus sparsity.</strong>{" "}
+          Minimize{" "}
+          <M>{tex`\|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \|f(\mathbf{x})\|_1`}</M>.
+          Start with <M>{tex`\lambda`}</M> around the value that
+          gives tens of active features per token, then sweep it.
+          If almost every atom fires, increase{" "}
+          <M>{tex`\lambda`}</M>; if most atoms are dead, decrease it
+          or use a resampling / ghost-gradient trick.
+        </li>
+        <li>
+          <strong>Track three metrics every epoch.</strong>{" "}
+          Reconstruction quality:{" "}
+          <M>{tex`\|x-\hat{x}\|^2 / \|x-\mu\|^2`}</M>. Sparsity:
+          average <M>{tex`\|f(x)\|_0`}</M>, counting activations
+          above a tiny threshold. Dictionary health: the fraction
+          of atoms that fire on at least one example per million
+          tokens. A good first run is not perfect; it is low
+          reconstruction error with sparse codes and few dead
+          features.
+        </li>
+        <li>
+          <strong>Audit before believing the dictionary.</strong>{" "}
+          For 50 random atoms and the 50 highest-activating atoms,
+          inspect the top text snippets, run a decoder logit lens,
+          and try small steering interventions. Do not label an
+          atom from one anecdotal example; require repeated
+          evidence across many contexts.
+        </li>
+      </ol>
+      <p>
+        A minimal PyTorch sketch looks like this. In practice the
+        slow part is not the module; it is the activation-caching
+        pipeline and the audit UI around the trained dictionary.
+      </p>
+      <pre className="overflow-x-auto rounded-2xl border border-slate-200 bg-slate-950 p-4 text-sm text-slate-100 dark:border-slate-800">
+        <code>{`class SAE(nn.Module):
+    def __init__(self, d_model, n_features):
+        super().__init__()
+        self.encoder = nn.Linear(d_model, n_features)
+        self.decoder = nn.Linear(n_features, d_model, bias=True)
+
+    def forward(self, x):
+        f = F.relu(self.encoder(x))
+        x_hat = self.decoder(f)
+        return x_hat, f
+
+sae = SAE(d_model=768, n_features=16 * 768).to(device)
+opt = torch.optim.AdamW(sae.parameters(), lr=3e-4)
+
+for x in activation_loader:
+    x = normalize(x.to(device))
+    x_hat, f = sae(x)
+
+    recon = (x - x_hat).pow(2).mean()
+    sparse = f.abs().mean()
+    loss = recon + l1_coeff * sparse
+
+    opt.zero_grad()
+    loss.backward()
+    opt.step()
+
+    with torch.no_grad():
+        sae.decoder.weight.div_(
+            sae.decoder.weight.norm(dim=0, keepdim=True).clamp_min(1e-6)
+        )`}</code>
+      </pre>
+      <Callout variant="mechinterp">
+        <p>
+          A practical first target: train on 5-20 million token
+          activations from GPT-2 small layer 6{" "}
+          <M>{tex`\mathrm{resid\_post}`}</M>, width{" "}
+          <M>{tex`16d`}</M>, batch size 4096-32768, AdamW, and a
+          short <M>{tex`\lambda`}</M> sweep. Stop when validation
+          reconstruction and average active features both plateau.
+          Then spend at least as long auditing atoms as you spent
+          training them; an unaudited SAE is just a compressed
+          activation dataset.
+        </p>
+      </Callout>
+
       <h2>What can go wrong</h2>
       <p>
         SAEs are an active research area; not every claim has
