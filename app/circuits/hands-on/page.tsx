@@ -5,6 +5,13 @@ import { Figure } from "@/components/content/Figure";
 import { Block, M } from "@/components/math/Math";
 import { tex } from "@/lib/tex";
 import { SAEDemo } from "@/components/viz/SAEDemo";
+import { SAEGatingCompare } from "@/components/viz/SAEGatingCompare";
+import { SAEParetoFrontier } from "@/components/viz/SAEParetoFrontier";
+import { FeatureSplittingDemo } from "@/components/viz/FeatureSplittingDemo";
+import { SteeringStrengthCurve } from "@/components/viz/SteeringStrengthCurve";
+import { CrosscoderDiagram } from "@/components/viz/CrosscoderDiagram";
+import { TranscoderDiagram } from "@/components/viz/TranscoderDiagram";
+import { AttributionGraphDemo } from "@/components/viz/AttributionGraphDemo";
 
 export const metadata = {
   title: "Hands on: training your own SAE",
@@ -1121,7 +1128,609 @@ def patch_atom(model, sae, hook_name, mu, s, clean_tokens,
         </li>
       </ul>
 
-      <h2>13. Personal: why I&apos;m building this, and what
+      <h2>13. Reading the frontier: a tour of the recent
+      literature</h2>
+      <p>
+        The previous twelve sections are how to build a working
+        SAE in 2026. This section is how to read the literature
+        that&apos;s redefining how SAEs are built every six
+        months. I&apos;ve picked the papers that have changed
+        the standard recipe (or are about to), ordered them
+        gradually from the foundational result to the open
+        edge of the field, and given each one a widget that
+        captures the central idea you should walk away with.
+        Read them in order or skip around &mdash; each
+        subsection stands on its own.
+      </p>
+
+      <Callout variant="note">
+        Every widget in this section is a{" "}
+        <em>cartoon</em>: simplified, deterministic, and
+        designed to make one idea legible in 30 seconds. The
+        underlying papers fight harder battles. Citations are
+        in <strong>13.10</strong>; if a result here surprises
+        you, the right next move is the original paper.
+      </Callout>
+
+      <h3>13.1 The foundational result &mdash;{" "}
+      &ldquo;Towards Monosemanticity&rdquo; (Bricken et al.,
+      Anthropic, October 2023)</h3>
+      <p>
+        The paper that started the modern SAE wave. Bricken et
+        al. trained a sparse autoencoder on the MLP activations
+        of a one-layer attention-only transformer, found
+        thousands of features that look monosemantic by
+        inspection, and published a long, careful argument that
+        what they were finding was real. Two ideas in this
+        paper became the field&apos;s default scaffolding:
+      </p>
+      <ul>
+        <li>
+          <strong>Sparsity is what produces interpretability.</strong>{" "}
+          A wide enough dictionary is necessary, but the L1
+          penalty is what forces individual atoms to specialize.
+          Without it the encoder solves the reconstruction by
+          smearing every input across many atoms, and you get
+          back the polysemantic problem you started with.
+        </li>
+        <li>
+          <strong>Reconstruction error is not the metric you
+          care about.</strong> Bricken&apos;s evaluation
+          centered on whether the model still functions when
+          activations are replaced by SAE reconstructions
+          (CE-recovered, in section 8 above), and whether
+          individual features behave as their labels predict
+          (the seed of section 10). Both of those measures
+          have stuck.
+        </li>
+      </ul>
+      <p>
+        Where the paper drew its line: a one-layer
+        attention-only transformer is well below the threshold
+        where features have to compete with the architectural
+        complexity of multi-layer models. The next two years of
+        work were about finding out which of Bricken&apos;s
+        observations survive at scale.
+      </p>
+      <Figure caption="The widget from the previous chapter, repeated here as a sanity image. Eight residual-stream coordinates (left), a 16-atom dictionary that fires sparsely (middle), and a near-perfect reconstruction (right). The arrow from polysemantic activations to monosemantic features is the bet of the entire literature.">
+        <SAEDemo />
+      </Figure>
+
+      <h3>13.2 The activation-function zoo &mdash; vanilla L1,
+      Top-K, JumpReLU, and Gated SAEs</h3>
+      <p>
+        The single most active design axis in 2024&ndash;2025
+        was the encoder&apos;s activation function. The L1
+        penalty Bricken et al. used has a known problem
+        (<em>magnitude shrinkage</em>: the gradient of{" "}
+        <M>{tex`\lambda |f_i|`}</M> pushes <em>every</em>{" "}
+        non-zero feature toward zero, including the ones the
+        SAE wants to keep). Three replacements emerged, each
+        targeting a different part of that bias.
+      </p>
+
+      <Figure caption="The four major SAE gating choices. Each method has its own knob — L1 threshold, k, JumpReLU threshold, gate threshold — and each knob trades sparsity against retained energy in a different way. Try a 'new sample' to see how each method handles different pre-activation distributions.">
+        <SAEGatingCompare />
+      </Figure>
+
+      <p>
+        Reading the widget: the grey background bar is the
+        pre-activation; the colored bar is what the gate lets
+        through. Walk through what each one does:
+      </p>
+      <ul>
+        <li>
+          <strong>Vanilla L1 (Bricken 2023).</strong>{" "}
+          <M>{tex`f_i = \mathrm{ReLU}(z_i - b)`}</M> with{" "}
+          <M>{tex`b`}</M> the L1-induced threshold. Simple, but
+          large features lose magnitude to the penalty &mdash;
+          if you measure feature strength by{" "}
+          <M>{tex`f_i`}</M>, you&apos;re measuring &ldquo;real
+          strength minus L1 shrinkage&rdquo;, and the
+          subtraction is a feature-dependent constant.
+        </li>
+        <li>
+          <strong>Top-K SAE (Gao et al., OpenAI 2024).</strong>{" "}
+          Replace the L1 with an explicit{" "}
+          <M>{tex`\mathrm{TopK}_k`}</M> selection: keep the{" "}
+          <M>{tex`k`}</M> largest pre-activations, zero
+          everything else, no magnitude penalty. Direct
+          consequences: <em>L0 is exactly k, by construction</em>;{" "}
+          surviving features keep their full size; the L1-vs-L0
+          mismatch goes away. The cost is that{" "}
+          <M>{tex`k`}</M> is now a hyperparameter you have to
+          set, and the discontinuity at the top-k boundary
+          requires a small auxiliary loss to keep dead atoms
+          alive.
+        </li>
+        <li>
+          <strong>JumpReLU SAE (Rajamanoharan et al.,
+          DeepMind 2024).</strong> A learnable per-feature
+          threshold <M>{tex`\theta_i`}</M>:{" "}
+          <M>{tex`f_i = z_i \cdot H(z_i - \theta_i)`}</M>, where
+          <M>{tex`H`}</M> is the Heaviside step. Identity above
+          threshold (no shrinkage), zero below. Trained with a
+          straight-through estimator for the discontinuity. The
+          per-feature threshold lets common features have low
+          thresholds and rare features have high ones &mdash;
+          something a single global L1 can&apos;t express.
+        </li>
+        <li>
+          <strong>Gated SAE (Rajamanoharan et al., DeepMind
+          2024).</strong> Two separate computations: a{" "}
+          <em>gate</em> (binary: should this feature fire?) and
+          a <em>magnitude</em> (continuous: how much?). Gated
+          and JumpReLU are siblings &mdash; both decouple the
+          fire decision from the magnitude &mdash; but Gated
+          uses two parameter heads and a tied-weight trick to
+          encourage them to agree.
+        </li>
+      </ul>
+      <p>
+        The conceptual move shared by all three replacements:
+        <em>sparsity is a structural property of the encoder,
+        not a soft preference of the loss</em>. L1 expresses
+        sparsity as a regularizer; Top-K, JumpReLU, and Gated
+        express it as a constraint baked into the activation
+        function. The latter is what consistently wins on the
+        Pareto frontier.
+      </p>
+
+      <h3>13.3 The Pareto frontier &mdash; how we actually
+      compare SAEs (Gao et al., OpenAI, June 2024)</h3>
+      <p>
+        Gao et al. did the unglamorous, foundational work of
+        defining a benchmark axis. Two numbers: average{" "}
+        <M>{tex`\|f(x)\|_0`}</M> on the x-axis, fraction of
+        downstream cross-entropy recovered on the y-axis. Every
+        SAE you train is one point on this plane. Different
+        methods trace different curves. The state of the art
+        is the upper-left envelope.
+      </p>
+      <Figure caption="Stylized Pareto frontiers, one curve per gating method, with a slider for dictionary width. Higher curves are strictly better — they recover more of the model's behavior at the same sparsity. The relative ordering of methods isn't fixed; in real benchmarks the curves cross at extreme sparsities.">
+        <SAEParetoFrontier />
+      </Figure>
+      <p>
+        Three things this widget is meant to drive home:
+      </p>
+      <ul>
+        <li>
+          <strong>SAE comparison is two-dimensional.</strong>{" "}
+          A paper that reports only &ldquo;reconstruction
+          MSE&rdquo; or only &ldquo;L0&rdquo; tells you a single
+          coordinate of a curve. You cannot say method A beats
+          method B without specifying the sparsity at which
+          you&apos;re comparing them. Almost every claim
+          you&apos;ll see in casual writing about &ldquo;Top-K
+          beats vanilla&rdquo; is implicitly asserting{" "}
+          <em>at this sparsity, on this model</em>.
+        </li>
+        <li>
+          <strong>Width helps, with diminishing returns.</strong>{" "}
+          Bigger dictionaries push the frontier up, but the
+          marginal gain shrinks fast past <M>{tex`16d`}</M>{" "}
+          and the dead-feature problem grows. The 64× setting
+          in the widget is in the regime where your training
+          recipe matters more than your width.
+        </li>
+        <li>
+          <strong>Power laws.</strong> Gao et al.&apos;s
+          headline empirical finding is that for Top-K SAEs,
+          MSE follows a clean power law in <M>{tex`m`}</M> and{" "}
+          <M>{tex`k`}</M>, the way LM cross-entropy follows a
+          power law in parameters and tokens. SAEs have scaling
+          laws.
+        </li>
+      </ul>
+
+      <h3>13.4 Feature splitting &mdash; why width{" "}
+      <em>changes</em> what your features mean (Templeton et
+      al., Anthropic, May 2024)</h3>
+      <p>
+        A subtle and important phenomenon: as you make the
+        dictionary wider, individual features don&apos;t just
+        get sharper &mdash; they <em>split</em> into
+        finer-grained sub-features. A single &ldquo;dog&rdquo;
+        atom at <M>{tex`m = d`}</M> becomes &ldquo;small
+        dogs&rdquo;, &ldquo;working dogs&rdquo;, &ldquo;dogs in
+        idiom&rdquo; at <M>{tex`m = 16d`}</M>. The split is
+        meaningful: each sub-feature has a coherent
+        interpretation and tends to fire on a recognizable
+        slice of the data.
+      </p>
+
+      <Figure caption="A toy of the splitting effect. Pick a parent feature (dog / Paris / if-clause) and slide the dictionary width. At m = 1d a single atom averages everything; from 4d to 16d the SAE matches the ground-truth sub-features one-by-one; past 16d you start over-splitting. 'Covered' means at least one atom landed close to that sub-feature.">
+        <FeatureSplittingDemo />
+      </Figure>
+
+      <p>
+        Three consequences for your work:
+      </p>
+      <ul>
+        <li>
+          <strong>The label of an atom depends on the
+          dictionary width.</strong> &ldquo;dog&rdquo; at 1×
+          and &ldquo;dog (small)&rdquo; at 16× are not the
+          same feature with different precision &mdash; they
+          are different decompositions, and a circuit that uses
+          one cannot trivially be re-expressed in the other.
+        </li>
+        <li>
+          <strong>There is no canonical ground-truth
+          dictionary.</strong> The set of features the model
+          uses is a function of how finely you ask. This is a
+          deep observation that the field is still digesting.
+        </li>
+        <li>
+          <strong>Multi-resolution dictionaries are a
+          live research direction.</strong> Matryoshka SAEs
+          (Bushnaq et al., 2024) train one dictionary that is
+          simultaneously a good <M>{tex`d`}</M>-atom dictionary,
+          a good <M>{tex`4d`}</M>-atom one, and a good{" "}
+          <M>{tex`16d`}</M>-atom one. The bet is that the
+          coarser features are nested inside the finer ones,
+          which lets you pick the resolution per-feature
+          rather than per-dictionary.
+        </li>
+      </ul>
+
+      <h3>13.5 Scaling Monosemanticity &mdash; SAEs on Claude
+      and the Golden Gate (Templeton et al., Anthropic, May
+      2024)</h3>
+      <p>
+        The paper that took SAEs from &ldquo;works on toy
+        models&rdquo; to &ldquo;works on production
+        models.&rdquo; Anthropic trained an SAE on a middle
+        layer of Claude 3 Sonnet, scaled the dictionary to
+        ~34M features, and audited a long tail of them. Two
+        findings became cultural touchpoints:
+      </p>
+      <ul>
+        <li>
+          <strong>Features at scale are abstract.</strong> Not
+          just &ldquo;dog&rdquo;, but &ldquo;the concept of
+          inner conflict in fiction&rdquo;, &ldquo;sycophantic
+          praise&rdquo;, &ldquo;code that sets up an
+          invariant&rdquo;. The features model frontier-LLM
+          cognition at a level much closer to human concepts
+          than the toy-model literature suggested.
+        </li>
+        <li>
+          <strong>Features are causal.</strong> Steering
+          Claude&apos;s &ldquo;Golden Gate Bridge&rdquo; atom
+          to a high value made a Claude variant that obsessed
+          over the bridge in every reply. This is the first
+          large-scale demonstration that an SAE feature can be
+          used to mechanically alter behavior in a predictable
+          direction.
+        </li>
+      </ul>
+
+      <Figure caption="A simulated steering-strength sweep. Solid line: how present is the feature in the model's output (does it talk about the topic?). Dashed line: how coherent is the output overall (is it still readable?). The product is a 'usable steering' window — too low and nothing happens, too high and the model degenerates.">
+        <SteeringStrengthCurve />
+      </Figure>
+
+      <p>
+        What the widget is meant to show is not just &ldquo;you
+        can steer&rdquo;; it&apos;s the <em>shape</em> of the
+        steering response. There are three regimes per atom:
+      </p>
+      <ul>
+        <li>
+          <strong>Sub-threshold (<M>{tex`\alpha < 0.5`}</M>).</strong>{" "}
+          The atom is being added, but at a level the
+          downstream layers ignore. Output is unchanged.
+        </li>
+        <li>
+          <strong>Useful steering (<M>{tex`0.5 < \alpha < 2`}</M>).</strong>{" "}
+          The feature shows up in the output and the model is
+          still fluent. This is where useful interpretability
+          and useful behavioral edits both live.
+        </li>
+        <li>
+          <strong>Coherence collapse (<M>{tex`\alpha > 2`}</M>).</strong>{" "}
+          The model fixates on the feature and degrades into
+          repetition or non-sequitur. The feature is
+          &ldquo;present&rdquo; in a degenerate sense, but the
+          output is no longer something you can interpret.
+        </li>
+      </ul>
+      <p>
+        The width of the useful-steering window is itself a
+        proxy for atom quality: a clean monosemantic feature
+        has a wide window where the topic shows up cleanly,
+        while a polysemantic atom has a narrow one (or none).
+      </p>
+
+      <h3>13.6 Gemma Scope &mdash; dictionaries as a public good
+      (Lieberum et al., DeepMind, July 2024)</h3>
+      <p>
+        DeepMind released a suite of pretrained JumpReLU SAEs
+        spanning every layer of Gemma 2 (2B and 9B), at
+        multiple sites (residual stream, attention output, MLP
+        output) and multiple sparsity levels &mdash; over 400
+        SAEs in total, trained at significant compute cost,
+        published openly. The release changed what an
+        individual researcher can do: instead of spending
+        weeks on training, you can spend them on{" "}
+        <em>analysis</em>.
+      </p>
+      <p>
+        Practical implication for your project: if your
+        research question is about <em>using</em> SAEs (circuit
+        analysis, causal validation, feature steering, safety
+        applications), start from Gemma Scope, not from a
+        custom-trained SAE. You only need to train your own
+        when (a) the open dictionaries don&apos;t cover the
+        site or model you need, (b) you&apos;re studying the
+        training dynamics themselves, or (c) your sparsity /
+        width target is outside the released grid. Most thesis
+        projects, including mine, do (c) eventually but should
+        start with (a).
+      </p>
+
+      <h3>13.7 Crosscoders &mdash; one dictionary, many layers
+      (Lindsey et al., Anthropic, October 2024)</h3>
+      <p>
+        Per-layer SAEs have an obvious redundancy: the same
+        feature, learned independently in layers 6, 7, and 8,
+        appears as three slightly-different atoms with no
+        explicit identity link. Manually matching them is a
+        chore that doesn&apos;t scale, and it leaks into every
+        downstream analysis (cross-layer circuits, training
+        dynamics, model diffing).
+      </p>
+      <p>
+        Crosscoders solve this by training{" "}
+        <em>one</em> sparse dictionary whose decoder writes
+        into <em>several</em> layers&apos; activations
+        simultaneously. A single feature has a single identity;
+        the question of &ldquo;which layers does it live
+        in&rdquo; is answered by which decoder heads have
+        non-zero columns.
+      </p>
+
+      <Figure caption="Toggle between per-layer SAEs and a crosscoder. In the per-layer view, each ground-truth feature shows up in multiple layers as multiple atoms; in the crosscoder view, each feature is a single node with edges to the layers it inhabits. Hover a feature to highlight it.">
+        <CrosscoderDiagram />
+      </Figure>
+
+      <p>
+        Two important applications crosscoders unlocked:
+      </p>
+      <ul>
+        <li>
+          <strong>Model diffing.</strong> Train a crosscoder
+          jointly on two checkpoints (base vs RLHF, base vs
+          fine-tune) and read off which features are{" "}
+          <em>shared</em>, <em>added</em>, or{" "}
+          <em>deleted</em>. This is the cleanest known method
+          for asking &ldquo;what did fine-tuning change?&rdquo;
+          at the feature level.
+        </li>
+        <li>
+          <strong>Cross-layer circuits.</strong> When the same
+          atom carries a feature across layers 6&ndash;9,
+          you can talk about &ldquo;feature{" "}
+          <M>{tex`F`}</M> reads from <M>{tex`G`}</M> in layer
+          7&rdquo; without first arguing that the layer-6 and
+          layer-7 versions of <M>{tex`F`}</M> are the same.
+          The book-keeping shrinks.
+        </li>
+      </ul>
+
+      <h3>13.8 Transcoders &mdash; SAEs that replace, not
+      reconstruct (Marks et al. and Dunefsky et al., 2024)</h3>
+      <p>
+        A standard SAE trains to reconstruct the activation at
+        a single site. A <em>transcoder</em> trains to predict
+        the <em>output</em> of a frozen MLP given its input.
+        The dictionary now describes what the MLP{" "}
+        <em>does</em> rather than what its activation
+        <em>looks like</em>, and you can swap the trained
+        transcoder in for the MLP at inference and the model
+        keeps working.
+      </p>
+
+      <Figure caption="Three architectures. Standard SAE: reconstruct the input. Transcoder: predict the MLP's output from its input, replacing the MLP at inference. Skip-transcoder: add a low-rank linear bypass so the sparse features only have to capture what the linear map can't.">
+        <TranscoderDiagram />
+      </Figure>
+
+      <p>
+        Why this matters in practice:
+      </p>
+      <ul>
+        <li>
+          <strong>Causal interpretability for free.</strong>{" "}
+          Because the transcoder is a drop-in replacement, any
+          intervention on its features is an intervention on
+          the model itself &mdash; you don&apos;t have to
+          decode-then-replace as you would with an SAE
+          reconstruction. Atom-level steering becomes one line
+          of code instead of a hooked forward pass with two
+          re-encodings.
+        </li>
+        <li>
+          <strong>Cleaner circuits.</strong> A circuit
+          expressed as &ldquo;feature <M>{tex`F`}</M> in
+          transcoder <M>{tex`T_5`}</M>&apos;s pre-activation
+          drives feature <M>{tex`G`}</M> in transcoder{" "}
+          <M>{tex`T_6`}</M>&apos;s post&rdquo; is a statement
+          about the model&apos;s computation, not just about
+          its activations. This is what attribution graphs in
+          the next subsection actually run on.
+        </li>
+        <li>
+          <strong>Skip-transcoders.</strong> A transcoder with
+          a low-rank linear residual path absorbs the
+          easy-to-predict component of the MLP&apos;s
+          input&rarr;output map, freeing the sparse features
+          to specialize on the residual nonlinear behavior.
+          Empirically this restores most of the fidelity gap
+          between SAEs and transcoders.
+        </li>
+      </ul>
+
+      <h3>13.9 Circuit tracing in SAE space &mdash; attribution
+      graphs (Lindsey et al., Anthropic, March 2025)</h3>
+      <p>
+        The synthesis. Once you have transcoders or crosscoders
+        at every site, &ldquo;a circuit&rdquo; can be expressed
+        entirely in SAE-feature space: a directed graph whose
+        nodes are atoms (or tokens, or logits) and whose edges
+        are the strengths of the causal contribution from one
+        atom to another. Anthropic&apos;s circuit-tracing line
+        of work computes these graphs automatically using
+        attribution patching at the atom level.
+      </p>
+
+      <Figure caption="A toy attribution graph for the prompt 'Dallas is in a state whose capital is'. Click a node to highlight every upstream atom that contributes above the threshold. Adjust the threshold to see the graph collapse to its load-bearing edges. This is the shape of the circuits the field is now building at scale.">
+        <AttributionGraphDemo />
+      </Figure>
+
+      <p>
+        Three properties of attribution graphs that change the
+        feel of mech interp once you start using them:
+      </p>
+      <ul>
+        <li>
+          <strong>Composability.</strong> Subgraphs are
+          themselves circuits. Take the attribution graph for
+          &ldquo;capital of a US state given its largest
+          city&rdquo;, restrict to the upstream features of
+          the &ldquo;Austin&rdquo; logit, and you have a
+          self-contained circuit you can paste into another
+          analysis.
+        </li>
+        <li>
+          <strong>Falsifiability.</strong> Every edge has a
+          numeric weight. You can patch out the highest-weight
+          edges and watch the answer probability fall, or zero
+          the lowest-weight edges and verify the answer is
+          unchanged. The graph is a hypothesis with concrete
+          predictions, which is exactly the property the
+          &ldquo;just-so story&rdquo; complaint accuses pre-SAE
+          interpretability of lacking.
+        </li>
+        <li>
+          <strong>Failure modes are visible.</strong> A
+          well-formed graph is sparse and modular &mdash; a
+          handful of edges per node, layered structure, clean
+          paths from inputs to outputs. A graph that is dense
+          and uniform is telling you the model isn&apos;t doing
+          anything circuit-shaped at this resolution, which is
+          itself diagnostic information.
+        </li>
+      </ul>
+
+      <h3>13.10 Open problems &mdash; where the field is stuck
+      (Sharkey et al., 2025)</h3>
+      <p>
+        Sharkey et al.&apos;s &ldquo;Open Problems in
+        Mechanistic Interpretability&rdquo; (2025) is the
+        single best read for understanding what people are
+        actually arguing about right now. The short version:
+      </p>
+      <ul>
+        <li>
+          <strong>Are SAE features the right primitive?</strong>{" "}
+          Linear features are a strong assumption. There are
+          known cases (modular arithmetic, certain
+          binding-task circuits) where the model&apos;s
+          computation is genuinely nonlinear in any reasonable
+          basis, and an SAE will not recover it cleanly.
+        </li>
+        <li>
+          <strong>What does &ldquo;faithful&rdquo;
+          mean?</strong> A label that predicts the
+          top-activating contexts, predicts steering effects,
+          and predicts patching effects can still be wrong
+          about the feature&apos;s causal role on
+          out-of-distribution inputs. The field has no settled
+          definition of faithfulness, and competing definitions
+          give different rankings of the same features. (My
+          thesis is in this gap.)
+        </li>
+        <li>
+          <strong>Compositionality.</strong> Even when
+          individual features are clean, composing them into
+          circuits is not solved. The attribution-graph
+          framework is the current best answer, but it doesn&apos;t
+          handle attention&apos;s position-mixing cleanly, and
+          long-context circuits explode combinatorially.
+        </li>
+        <li>
+          <strong>Scaling validation, not just training.</strong>{" "}
+          Training SAEs at frontier scale is now routine.
+          Auditing them is not. There is no equivalent of
+          Gemma Scope for <em>validated</em> features. The
+          benchmark gap is the bottleneck on whether SAE
+          interpretability becomes a real scientific tool.
+        </li>
+      </ul>
+
+      <h3>13.11 A reading list, in dependency order</h3>
+      <ol>
+        <li>
+          Bricken et al., <em>Towards Monosemanticity</em>,
+          Anthropic 2023. Read first; everything else is a
+          response.
+        </li>
+        <li>
+          Templeton et al., <em>Scaling Monosemanticity</em>,
+          Anthropic 2024. The Claude-scale demonstration and
+          the Golden Gate Bridge result.
+        </li>
+        <li>
+          Gao et al., <em>Scaling and evaluating sparse
+          autoencoders</em>, OpenAI 2024. Top-K SAE,
+          scaling-laws framing, the Pareto frontier metric.
+        </li>
+        <li>
+          Rajamanoharan et al., <em>Improving Dictionary
+          Learning with Gated Sparse Autoencoders</em> and{" "}
+          <em>Jumping Ahead: JumpReLU SAEs</em>, DeepMind 2024.
+          The two activation-function alternatives.
+        </li>
+        <li>
+          Lieberum et al., <em>Gemma Scope</em>, DeepMind
+          2024. The big public SAE release.
+        </li>
+        <li>
+          Lindsey et al., <em>Sparse Crosscoders for
+          Cross-Layer Features and Model Diffing</em>,
+          Anthropic 2024.
+        </li>
+        <li>
+          Marks et al. and Dunefsky et al., 2024. The
+          transcoder pair.
+        </li>
+        <li>
+          Lindsey et al., <em>Circuit Tracing</em> /{" "}
+          <em>On the Biology of a Large Language Model</em>,
+          Anthropic 2025. Attribution graphs at scale.
+        </li>
+        <li>
+          Sharkey et al., <em>Open Problems in Mechanistic
+          Interpretability</em>, 2025. The field map.
+        </li>
+        <li>
+          Bushnaq et al., <em>Matryoshka SAEs</em>, 2024 (and
+          follow-ups). The multi-resolution dictionary line.
+        </li>
+      </ol>
+
+      <Callout variant="mechinterp">
+        A way to use this section once you&apos;ve read it: the
+        next time you see a paper title with &ldquo;SAE&rdquo;
+        in it, ask <em>which axis on the Pareto frontier is it
+        moving</em>. Better gating function? Wider dictionary
+        with fewer dead atoms? Cross-layer or cross-checkpoint
+        identity? Better validation? Most papers move one of
+        these and leave the others alone, and recognizing which
+        one tells you what to compare it to.
+      </Callout>
+
+      <h2>14. Personal: why I&apos;m building this, and what
       goes after it</h2>
       <p>
         This chapter is also a research notebook. I&apos;m
@@ -1130,9 +1739,10 @@ def patch_atom(model, sae, hook_name, mu, s, clean_tokens,
         proposing for my thesis is:{" "}
         <strong>Automated Causal Validation of Sparse Autoencoder
         Features in Transformer Language Models</strong>. The
-        previous twelve sections describe the easier half of
-        that work &mdash; getting an SAE trained and labelled.
-        The thesis itself is about the half people skip.
+        previous thirteen sections describe the easier half of
+        that work &mdash; getting an SAE trained, labelled, and
+        situated in the literature. The thesis itself is about
+        the half people skip.
       </p>
 
       <h3>The problem I&apos;m trying to solve</h3>
