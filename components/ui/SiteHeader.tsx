@@ -37,6 +37,12 @@ export function SiteHeader() {
           <Link href="/circuits" className="transition hover:text-ink">
             Circuits
           </Link>
+          <Link
+            href="/architectures"
+            className="transition hover:text-ink"
+          >
+            Architectures
+          </Link>
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <a

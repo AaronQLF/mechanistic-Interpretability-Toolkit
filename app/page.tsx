@@ -311,6 +311,59 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="mt-20">
+        <div className="rounded-2xl border border-accent/40 bg-[rgb(var(--accent-soft))]/30 p-6 sm:p-10">
+          <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+            <div>
+              <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                Reference
+              </p>
+              <h2 className="mt-2 font-sans text-3xl font-semibold tracking-tight text-ink">
+                The Architecture Map
+              </h2>
+              <p className="mt-3 font-serif text-base leading-relaxed text-ink-muted">
+                Every major AI/ML architecture from linear regression
+                (1805) to modern frontier LLMs and state-space models —
+                189 architectures across 14 categories. Click any node to
+                read why you would pick it over its closest alternatives.
+              </p>
+              <Link
+                href="/architectures"
+                className="mt-5 inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 font-sans text-sm font-semibold text-white transition hover:opacity-90"
+              >
+                Open the map
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-2 font-mono text-[11px] text-ink-muted">
+              {[
+                "Linear / kernel",
+                "Trees",
+                "Probabilistic",
+                "MLPs / autoencoders",
+                "CNNs",
+                "Detection",
+                "RNNs / memory",
+                "Transformers",
+                "Efficient TFs",
+                "Modern LLMs",
+                "State-space",
+                "GANs",
+                "Flows",
+                "+ more",
+              ].map((label) => (
+                <div
+                  key={label}
+                  className="rounded-md border border-line/70 bg-paper px-2 py-1.5"
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="mt-20 rounded-2xl border border-line bg-paper-raised p-6 sm:p-10">
         <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
           <div>
