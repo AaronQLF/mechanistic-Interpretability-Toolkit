@@ -152,94 +152,159 @@ export default function SparseAutoencodersPage() {
 
       <h2>Advanced: training one on a small model</h2>
       <p>
-        The smallest serious SAE project is not &ldquo;train on a
-        frontier model.&rdquo; It is: pick one activation site in a
-        small open-weight transformer, cache a few million
-        activations, train one dictionary, and audit whether the
-        learned atoms are readable. GPT-2 small, TinyStories-33M,
-        or Pythia-70M are large enough to have real features but
-        small enough that a laptop or single consumer GPU can run
-        the full loop.
+        You don&apos;t need a frontier model. The smallest serious
+        project: pick one activation site in a small open-weight
+        transformer, cache a few million activations, train one
+        dictionary, and audit whether its atoms are readable. GPT-2
+        small, TinyStories-33M, and Pythia-70M are big enough to
+        carry real features yet small enough to run the whole loop
+        on a single consumer GPU.
       </p>
+
+      <Callout variant="note" title="The whole project, in three phases">
+        <ol>
+          <li>
+            <strong>Cache.</strong> Run the model over text and save
+            the activation at one site &rarr; a matrix{" "}
+            <M>{tex`X \in \mathbb{R}^{N \times d}`}</M>, one row per
+            token.
+          </li>
+          <li>
+            <strong>Train.</strong> Fit a wide, sparse autoencoder on{" "}
+            <M>X</M> &mdash; reconstruction error plus an L1 sparsity
+            penalty.
+          </li>
+          <li>
+            <strong>Audit.</strong> Read the learned atoms and keep
+            only the ones you can actually name.
+          </li>
+        </ol>
+      </Callout>
+
+      <p className="!mb-2 font-sans text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        A concrete first target
+      </p>
+      <div className="my-3 overflow-hidden rounded-lg border border-line font-sans text-sm">
+        <table className="w-full border-collapse">
+          <tbody className="text-ink">
+            <tr className="border-b border-line">
+              <th scope="row" className="w-1/3 bg-paper-sunken px-4 py-2 text-left font-medium text-ink-muted">
+                Model
+              </th>
+              <td className="px-4 py-2">GPT-2 small, TinyStories-33M, or Pythia-70M</td>
+            </tr>
+            <tr className="border-b border-line">
+              <th scope="row" className="bg-paper-sunken px-4 py-2 text-left font-medium text-ink-muted">
+                Activation site
+              </th>
+              <td className="px-4 py-2">
+                <M>{tex`\mathrm{resid\_post}`}</M> after a middle layer (e.g. layer 6)
+              </td>
+            </tr>
+            <tr className="border-b border-line">
+              <th scope="row" className="bg-paper-sunken px-4 py-2 text-left font-medium text-ink-muted">
+                Input width
+              </th>
+              <td className="px-4 py-2">
+                <M>{tex`d = 768`}</M> (GPT-2 small)
+              </td>
+            </tr>
+            <tr className="border-b border-line">
+              <th scope="row" className="bg-paper-sunken px-4 py-2 text-left font-medium text-ink-muted">
+                Dictionary width
+              </th>
+              <td className="px-4 py-2">
+                <M>{tex`m = 16d = 12{,}288`}</M> atoms
+              </td>
+            </tr>
+            <tr className="border-b border-line">
+              <th scope="row" className="bg-paper-sunken px-4 py-2 text-left font-medium text-ink-muted">
+                Training tokens
+              </th>
+              <td className="px-4 py-2">5&ndash;20 million</td>
+            </tr>
+            <tr className="border-b border-line">
+              <th scope="row" className="bg-paper-sunken px-4 py-2 text-left font-medium text-ink-muted">
+                Batch &amp; optimizer
+              </th>
+              <td className="px-4 py-2">
+                4,096&ndash;32,768 &middot; AdamW, lr <M>{tex`3\times 10^{-4}`}</M>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" className="bg-paper-sunken px-4 py-2 text-left font-medium text-ink-muted">
+                Stop when
+              </th>
+              <td className="px-4 py-2">reconstruction and active-atom count both plateau</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>1. Cache the activations</h3>
       <p>
-        The object you train on is a matrix{" "}
-        <M>{tex`X \in \mathbb{R}^{N \times d}`}</M>, where each row
-        is one activation vector from one token position. For a
-        residual-stream SAE on GPT-2 small, <M>{tex`d = 768`}</M>.
-        A typical beginner dictionary might use{" "}
-        <M>{tex`m = 16d = 12288`}</M> atoms; that is wide enough to
-        test superposition without making every engineering problem
-        about scale.
+        You&apos;re building a matrix{" "}
+        <M>{tex`X \in \mathbb{R}^{N \times d}`}</M>: one row per token
+        position, <M>d</M> columns of residual stream.
       </p>
-      <ol>
+      <ul>
         <li>
-          <strong>Choose one site, not the whole model.</strong>{" "}
-          Start with <M>{tex`\mathrm{resid\_post}`}</M> after a
-          middle layer, or the output of one MLP block. Middle
-          residual streams usually produce more interpretable
-          beginner results than very early layers, where features
-          are lexical, or very late layers, where features are
-          close to logits.
+          <strong>Pick one site, not the whole model.</strong> A
+          middle-layer <M>{tex`\mathrm{resid\_post}`}</M> reads better
+          than early layers (features are lexical) or late layers
+          (features are nearly logits).
         </li>
         <li>
-          <strong>Build the activation dataset.</strong> Sample text
-          from the same distribution the model understands:
-          OpenWebText-style text for GPT-2, TinyStories for a
-          TinyStories model, code for a code model. Run the model
-          with hooks, save the chosen activation at every
-          non-padding token, and shuffle by token rather than by
-          document so each minibatch is diverse.
+          <strong>Match the model&apos;s diet.</strong> OpenWebText
+          for GPT-2, TinyStories for a TinyStories model, code for a
+          code model &mdash; the atoms you recover depend on what you
+          feed it.
         </li>
         <li>
-          <strong>Normalize before training.</strong> Subtract the
-          activation mean <M>{tex`\mu`}</M> and divide by the
-          average norm or per-dimension standard deviation. The SAE
-          should learn feature directions, not waste capacity on
-          the global mean activation. Add the mean back only when
-          re-inserting reconstructions into the model.
+          <strong>Shuffle by token, not by document,</strong> so every
+          minibatch sees diverse contexts.
         </li>
         <li>
-          <strong>Use a tied geometric convention.</strong> Treat
-          decoder rows or columns as the dictionary atoms, then
-          keep each atom unit-norm after optimizer steps. Without
-          this, the encoder can shrink while the decoder grows (or
-          vice versa), changing the L1 penalty without changing the
-          reconstruction.
+          <strong>Normalize.</strong> Subtract the mean{" "}
+          <M>{tex`\mu`}</M> and scale to unit norm so the SAE spends
+          capacity on feature directions, not the global mean. Add{" "}
+          <M>{tex`\mu`}</M> back only when re-inserting reconstructions
+          into the model.
         </li>
+      </ul>
+      <h3>2. Train the dictionary</h3>
+      <ul>
         <li>
-          <strong>Train with reconstruction plus sparsity.</strong>{" "}
-          Minimize{" "}
+          <strong>Minimize reconstruction + sparsity:</strong>{" "}
           <M>{tex`\|\mathbf{x} - \hat{\mathbf{x}}\|_2^2 + \lambda \|f(\mathbf{x})\|_1`}</M>.
-          Start with <M>{tex`\lambda`}</M> around the value that
-          gives tens of active features per token, then sweep it.
-          If almost every atom fires, increase{" "}
-          <M>{tex`\lambda`}</M>; if most atoms are dead, decrease it
-          or use a resampling / ghost-gradient trick.
         </li>
         <li>
-          <strong>Track three metrics every epoch.</strong>{" "}
-          Reconstruction quality:{" "}
-          <M>{tex`\|x-\hat{x}\|^2 / \|x-\mu\|^2`}</M>. Sparsity:
-          average <M>{tex`\|f(x)\|_0`}</M>, counting activations
-          above a tiny threshold. Dictionary health: the fraction
-          of atoms that fire on at least one example per million
-          tokens. A good first run is not perfect; it is low
-          reconstruction error with sparse codes and few dead
-          features.
+          <strong>
+            Tune <M>{tex`\lambda`}</M> for tens of active atoms per
+            token.
+          </strong>{" "}
+          Almost everything fires &rarr; raise{" "}
+          <M>{tex`\lambda`}</M>; mostly dead atoms &rarr; lower it or
+          add a resampling / ghost-gradient trick.
         </li>
         <li>
-          <strong>Audit before believing the dictionary.</strong>{" "}
-          For 50 random atoms and the 50 highest-activating atoms,
-          inspect the top text snippets, run a decoder logit lens,
-          and try small steering interventions. Do not label an
-          atom from one anecdotal example; require repeated
-          evidence across many contexts.
+          <strong>Keep every atom unit-norm</strong> after each step.
+          Otherwise the encoder shrinks while the decoder grows,
+          gaming the L1 penalty without improving reconstruction.
         </li>
-      </ol>
+        <li>
+          <strong>Watch three numbers.</strong> Reconstruction{" "}
+          <M>{tex`\|x-\hat{x}\|^2 / \|x-\mu\|^2`}</M>, sparsity
+          (average <M>{tex`\|f(x)\|_0`}</M>), and dictionary health
+          (fraction of atoms that ever fire). A healthy first run is
+          low reconstruction error with sparse codes and few dead
+          atoms.
+        </li>
+      </ul>
       <p>
-        A minimal PyTorch sketch looks like this. In practice the
-        slow part is not the module; it is the activation-caching
-        pipeline and the audit UI around the trained dictionary.
+        The module itself is tiny &mdash; in practice the slow part
+        is the activation-caching pipeline and the audit UI around
+        it, not this:
       </p>
       <pre className="overflow-x-auto rounded-2xl border border-slate-200 bg-slate-950 p-4 text-sm text-slate-100 dark:border-slate-800">
         <code>{`class SAE(nn.Module):
@@ -273,17 +338,32 @@ for x in activation_loader:
             sae.decoder.weight.norm(dim=0, keepdim=True).clamp_min(1e-6)
         )`}</code>
       </pre>
+      <h3>3. Audit before you believe it</h3>
+      <ul>
+        <li>
+          <strong>Sample widely.</strong> For ~50 random atoms and
+          the ~50 highest-firing ones, read the top-activating text
+          snippets and try to name each.
+        </li>
+        <li>
+          <strong>Cross-check every name.</strong> Run a decoder
+          logit lens and a small steering nudge &mdash; the snippets,
+          the promoted tokens, and the steering effect should all
+          tell the same story.
+        </li>
+        <li>
+          <strong>Demand repeated evidence.</strong> Never label an
+          atom from a single anecdote; require the pattern to hold
+          across many contexts.
+        </li>
+      </ul>
+
       <Callout variant="mechinterp">
         <p>
-          A practical first target: train on 5-20 million token
-          activations from GPT-2 small layer 6{" "}
-          <M>{tex`\mathrm{resid\_post}`}</M>, width{" "}
-          <M>{tex`16d`}</M>, batch size 4096-32768, AdamW, and a
-          short <M>{tex`\lambda`}</M> sweep. Stop when validation
-          reconstruction and average active features both plateau.
-          Then spend at least as long auditing atoms as you spent
-          training them; an unaudited SAE is just a compressed
-          activation dataset.
+          Spend at least as long auditing atoms as you spent training
+          them. An unaudited SAE is just a compressed activation
+          dataset &mdash; the interpretability payoff only arrives
+          once you can name what each atom fires on.
         </p>
       </Callout>
 

@@ -24,6 +24,17 @@
   --viz-eigen: 219 39 119;
 }
 
+/* Quant roadmap shadow track — scoped accent (emerald) */
+.theme-quant {
+  --accent: 5 150 105;
+  --accent-soft: 209 250 229;
+}
+
+.dark .theme-quant {
+  --accent: 52 211 153;
+  --accent-soft: 6 78 59;
+}
+
 .dark {
   --paper: 18 18 21;
   --paper-raised: 28 28 32;

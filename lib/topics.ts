@@ -423,6 +423,14 @@ export function getAdjacentChapters(
   chapterSlug: string
 ): { prev?: Chapter; next?: Chapter } {
   const chapters = getModule(moduleSlug)?.chapters ?? [];
+  return getAdjacentInChapters(chapters, chapterSlug);
+}
+
+/** Adjacent chapters within an explicit list (e.g. quant roadmap modules). */
+export function getAdjacentInChapters(
+  chapters: Chapter[],
+  chapterSlug: string
+): { prev?: Chapter; next?: Chapter } {
   const idx = chapters.findIndex((c) => c.slug === chapterSlug);
   if (idx === -1) return {};
   return {

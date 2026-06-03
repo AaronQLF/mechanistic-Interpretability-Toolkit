@@ -68,6 +68,14 @@ npm run dev
 
 Then open <http://localhost:3000>.
 
+## Quant Developer Roadmap (shadow track)
+
+A second curriculum lives at **`/quant`**: interview-oriented modules for quantitative developers (C++, DSA, concurrency, low-latency systems, OS/networking, probability, statistics, brainteasers, stochastic calculus, finance, trading-system design, Python, SQL, and mock interviews). It uses the same layout primitives as the mech-interp chapters, a scoped emerald accent (`.theme-quant`), and is only linked from the site footer — not from the main header.
+
+- **Curriculum data:** [`lib/quant.ts`](lib/quant.ts)
+- **Chapter pages:** generated under `components/quant/chapters/` from [`scripts/gen-quant-chapters.ts`](scripts/gen-quant-chapters.ts) (registry: `components/quant/chapters/registry.ts`). After editing the generator, run `npm run gen:quant`.
+- **Widgets:** [`components/viz/quant/`](components/viz/quant/)
+
 ## Building for production
 
 ```bash
@@ -82,6 +90,7 @@ The site is fully static — deploy to Vercel, Cloudflare Pages, Netlify, or any
 ```
 app/                          # routes
   page.tsx                    # landing
+  quant/                      # shadow quant roadmap (/quant, /quant/[module], …)
   linear-algebra/             # LA module + 12 chapter pages
   probability/                # Probability module + 10 chapter pages
   calculus/                   # Calculus module + 9 chapter pages
@@ -93,11 +102,12 @@ components/
   math/                       # <M> / <Block> KaTeX wrappers
   viz/                        # interactive SVG widgets (one per concept)
 lib/
+  quant.ts                    # quant roadmap curriculum + static route list
   linalg.ts                   # vec/mat math (pure, no deps)
   prob.ts                     # softmax / entropy / KL / sampling helpers
   calc.ts                     # numeric derivatives + named function library
   geometry.ts                 # world↔screen transforms
-  topics.ts                   # curriculum metadata
+  topics.ts                   # mech-interp curriculum metadata
 ```
 
 ## Adding a new chapter

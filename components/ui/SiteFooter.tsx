@@ -1,8 +1,19 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 const REPO_URL =
   "https://github.com/AaronQLF/mechanistic-Interpretability-Toolkit";
 const PORTFOLIO_URL = "https://aaronqlf.github.io/pflioblog";
 
 export function SiteFooter() {
+  const pathname = usePathname() ?? "";
+  const isQuant = pathname === "/quant" || pathname.startsWith("/quant/");
+  return isQuant ? <QuantFooter /> : <MechFooter />;
+}
+
+function MechFooter() {
   return (
     <footer className="border-t border-line bg-paper">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
@@ -80,7 +91,106 @@ export function SiteFooter() {
             © {new Date().getFullYear()} Haroun Guessous. Content licensed for
             learning and remixing.
           </p>
-          <p className="font-mono">v0.1 — linear algebra module</p>
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono">
+            <span>v0.1 — linear algebra module</span>
+            <Link
+              href="/quant"
+              className="font-sans text-[11px] font-normal text-ink-subtle/80 underline-offset-2 hover:text-accent hover:underline"
+            >
+              Quant dev roadmap
+            </Link>
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function QuantFooter() {
+  return (
+    <footer className="theme-quant border-t border-line bg-paper">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
+        <div>
+          <p className="font-sans text-sm font-semibold text-ink">
+            Quant Dev Roadmap
+          </p>
+          <p className="mt-2 max-w-md font-serif text-sm leading-relaxed text-ink-muted">
+            An interview-oriented roadmap for quantitative developers — C++,
+            systems, probability, stochastic calculus, and pricing. No cookies,
+            no trackers, no signup.
+          </p>
+        </div>
+
+        <div>
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-ink-subtle">
+            Roadmap
+          </p>
+          <ul className="mt-3 space-y-2 font-sans text-sm">
+            <li>
+              <Link
+                href="/quant"
+                className="text-ink-muted transition hover:text-accent"
+              >
+                All modules
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/quant/interview"
+                className="text-ink-muted transition hover:text-accent"
+              >
+                Mock interview sets
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-ink-muted transition hover:text-accent"
+              >
+                <ExternalIcon className="h-4 w-4" />
+                Mech Interp Toolkit
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-ink-subtle">
+            Author
+          </p>
+          <ul className="mt-3 space-y-2 font-sans text-sm">
+            <li>
+              <a
+                href={PORTFOLIO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-ink-muted transition hover:text-accent"
+              >
+                <ExternalIcon className="h-4 w-4" />
+                Haroun Guessous · portfolio
+              </a>
+            </li>
+            <li>
+              <a
+                href={REPO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-ink-muted transition hover:text-accent"
+              >
+                <GitHubIcon className="h-4 w-4" />
+                Source on GitHub
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="border-t border-line">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-1 px-4 py-4 text-xs text-ink-subtle sm:flex-row sm:items-center sm:px-6 lg:px-8">
+          <p>
+            © {new Date().getFullYear()} Haroun Guessous. Educational content —
+            not financial advice.
+          </p>
+          <p className="font-mono">quant roadmap · shadow track</p>
         </div>
       </div>
     </footer>

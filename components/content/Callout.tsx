@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
 
-type Variant = "intuition" | "mechinterp" | "pitfall" | "note";
+type Variant =
+  | "intuition"
+  | "mechinterp"
+  | "pitfall"
+  | "note"
+  | "interview"
+  | "desk";
 
 const styles: Record<
   Variant,
@@ -29,6 +35,18 @@ const styles: Record<
     ring: "border-line",
     bg: "bg-paper-sunken",
     icon: <Dot className="h-4 w-4 text-ink-muted" />,
+  },
+  interview: {
+    label: "In the interview",
+    ring: "border-emerald-500/35",
+    bg: "bg-emerald-500/[0.06] dark:bg-emerald-400/[0.08]",
+    icon: <Mic className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />,
+  },
+  desk: {
+    label: "On the desk",
+    ring: "border-violet-500/30",
+    bg: "bg-violet-500/[0.05] dark:bg-violet-400/[0.08]",
+    icon: <Terminal className="h-4 w-4 text-violet-700 dark:text-violet-400" />,
   },
 };
 
@@ -90,6 +108,43 @@ function Dot({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
       <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function Mic({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" />
+      <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+      <path d="M12 18v4" />
+      <path d="M8 22h8" />
+    </svg>
+  );
+}
+
+function Terminal({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m4 17 6-6-6-6" />
+      <path d="M12 19h8" />
+      <rect x="2" y="3" width="20" height="18" rx="2" />
     </svg>
   );
 }
